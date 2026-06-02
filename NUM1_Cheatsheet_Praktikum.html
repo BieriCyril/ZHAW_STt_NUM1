@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUM1 Cheatsheet – ZHAW Numerik</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --text3: #6e7681;
+    --blue: #388bfd;
+    --blue-dim: #1f3a5c;
+    --green: #3fb950;
+    --green-dim: #1a3a24;
+    --amber: #d29922;
+    --amber-dim: #3a2a0a;
+    --purple: #a371f7;
+    --purple-dim: #2d1f55;
+    --teal: #39d353;
+    --coral: #f78166;
+    --coral-dim: #3a1a12;
+    --pink: #db61a2;
+    --pink-dim: #3a1528;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 3rem 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    gap: 2rem;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+    flex-wrap: wrap;
+  }
+
+  header h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.03em;
+  }
+
+  header h1 span { color: var(--blue); }
+
+  .header-meta {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  nav {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-left: auto;
+  }
+
+  nav a {
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text2);
+    text-decoration: none;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  nav a:hover { color: var(--blue); border-color: var(--blue); }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 3rem 4rem;
+  }
+
+  .topic {
+    margin-bottom: 3rem;
+  }
+
+  .topic-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topic-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .topic-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .topic-count {
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text3);
+    margin-left: auto;
+  }
+
+  .func-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .func-card {
+    background: var(--bg2);
+    padding: 1.1rem 1.25rem;
+    transition: background 0.15s;
+  }
+  .func-card:hover { background: var(--bg3); }
+
+  .func-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .func-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--blue);
+    word-break: break-all;
+  }
+
+  .week-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+
+  .func-desc {
+    font-size: 13px;
+    color: var(--text2);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+    margin-top: 0.6rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  th {
+    text-align: left;
+    color: var(--text3);
+    font-weight: 500;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 3px 8px 3px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  td {
+    padding: 4px 8px 4px 0;
+    vertical-align: top;
+    color: var(--text2);
+    border-bottom: 1px solid #1c2128;
+  }
+
+  td:first-child {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--coral);
+    min-width: 100px;
+  }
+
+  td:nth-child(2) {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--purple);
+    min-width: 60px;
+  }
+
+  .output-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    background: var(--green-dim);
+    padding: 3px 8px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 4px;
+  }
+
+  /* Topic colors */
+  .t-ode   { --tc: #388bfd; --td: #1f3a5c; }
+  .t-lgs   { --tc: #a371f7; --td: #2d1f55; }
+  .t-null  { --tc: #3fb950; --td: #1a3a24; }
+  .t-lsq   { --tc: #d29922; --td: #3a2a0a; }
+  .t-chol  { --tc: #f78166; --td: #3a1a12; }
+  .t-kinem { --tc: #db61a2; --td: #3a1528; }
+  .t-diff  { --tc: #39d353; --td: #1a3015; }
+  .t-pdgl  { --tc: #58a6ff; --td: #0d2040; }
+
+  .topic-dot { background: var(--tc); }
+  .topic-title { color: var(--tc); }
+  .week-badge { background: var(--td); color: var(--tc); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1><span>//</span> NUM1 Cheatsheet</h1>
+    <div class="header-meta">ZHAW · Numerik 1 · W1–W13 · Python / NumPy</div>
+  </div>
+  <nav>
+    <a href="#ode">ODE-Verfahren</a>
+    <a href="#lgs">Lin. Gleichungssysteme</a>
+    <a href="#null">Nullstellensuche</a>
+    <a href="#lsq">Ausgleichsrechnung</a>
+    <a href="#chol">Cholesky / Faktoris.</a>
+    <a href="#kinem">Roboterkinematik</a>
+    <a href="#pdgl">Part. DGL</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ================================================================ -->
+<!-- BLOCK 1: ODE-Verfahren                                           -->
+<!-- ================================================================ -->
+<section class="topic t-ode" id="ode">
+  <div class="topic-header">
+    <div class="topic-dot"></div>
+    <div class="topic-title">ODE-Verfahren (Einschritt)</div>
+    <div class="topic-count">8 Funktionen · W9, W10/11, W12</div>
+  </div>
+  <div class="func-grid">
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">eulerExplizit(f, x0, y0, xn, h)</div>
+        <span class="week-badge t-ode">W9/W10</span>
+      </div>
+      <div class="func-desc">Explizites Euler-Verfahren (Ordnung 1). Berechnet y' = f(x, y) mit fester Schrittweite h von x0 bis xn.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>Rechte Seite der DGL: f(x, y)</td></tr>
+        <tr><td>x0</td><td>float</td><td>Startwert x</td></tr>
+        <tr><td>y0</td><td>float</td><td>Anfangswert y(x0)</td></tr>
+        <tr><td>xn</td><td>float</td><td>Endwert x</td></tr>
+        <tr><td>h</td><td>float</td><td>Schrittweite</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">eulerImplizit(f, df, x0, y0, xn, h)</div>
+        <span class="week-badge t-ode">W9/W10</span>
+      </div>
+      <div class="func-desc">Implizites Euler-Verfahren (Ordnung 1). Stabiler als explizit; löst pro Schritt ein nichtlineares Gleichungssystem via Newton.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y)</td></tr>
+        <tr><td>df</td><td>callable</td><td>∂f/∂y – Ableitung nach y</td></tr>
+        <tr><td>x0, y0</td><td>float</td><td>Anfangswerte</td></tr>
+        <tr><td>xn</td><td>float</td><td>Endwert</td></tr>
+        <tr><td>h</td><td>float</td><td>Schrittweite</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">Mittelpunktsregel(f, x0, y0, h, xn)</div>
+        <span class="week-badge t-ode">W10/11</span>
+      </div>
+      <div class="func-desc">Explizite Mittelpunktsregel (Runge-Kutta Ordnung 2). Nutzt zwei Steigungen r1 und r2 am Mittelpunkt.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y)</td></tr>
+        <tr><td>x0, y0</td><td>float</td><td>Anfangswerte</td></tr>
+        <tr><td>h</td><td>float</td><td>Schrittweite</td></tr>
+        <tr><td>xn</td><td>float</td><td>Endwert</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">Heun(f, x0, y0, h, xn)</div>
+        <span class="week-badge t-ode">W10/11</span>
+      </div>
+      <div class="func-desc">Heun-Verfahren (Prädiktor-Korrektor, Ordnung 2). Schätzt erst mit explizitem Euler, korrigiert dann mit dem Mittelwert der Steigungen.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y)</td></tr>
+        <tr><td>x0, y0</td><td>float</td><td>Anfangswerte</td></tr>
+        <tr><td>h</td><td>float</td><td>Schrittweite</td></tr>
+        <tr><td>xn</td><td>float</td><td>Endwert</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">Mittelpunktsregel_Impl(f, x0, y0, h, xn, df)</div>
+        <span class="week-badge t-ode">W10/11</span>
+      </div>
+      <div class="func-desc">Implizite Mittelpunktsregel (Ordnung 2, symplektisch). Löst pro Schritt ein nichtlineares System via Newton, energieerhaltend.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y)</td></tr>
+        <tr><td>x0, y0</td><td>float</td><td>Anfangswerte</td></tr>
+        <tr><td>h</td><td>float</td><td>Schrittweite</td></tr>
+        <tr><td>xn</td><td>float</td><td>Endwert</td></tr>
+        <tr><td>df</td><td>callable</td><td>∂f/∂y</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">Heun_Impl(f, x0, y0, h, xn, df)</div>
+        <span class="week-badge t-ode">W10/11</span>
+      </div>
+      <div class="func-desc">Implizites Heun-Verfahren (Ordnung 2). Löst implizit die Korrektorstufe mit Newton.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y)</td></tr>
+        <tr><td>x0, y0</td><td>float</td><td>Anfangswerte</td></tr>
+        <tr><td>h</td><td>float</td><td>Schrittweite</td></tr>
+        <tr><td>xn</td><td>float</td><td>Endwert</td></tr>
+        <tr><td>df</td><td>callable</td><td>∂f/∂y</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">RK4(f, x0, y0, h, xn)</div>
+        <span class="week-badge t-ode">W10/11</span>
+      </div>
+      <div class="func-desc">Klassisches Runge-Kutta Verfahren 4. Ordnung. Vier Steigungen r1–r4, gewichteter Mittelwert. Sehr genau, Ordnung 4.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y)</td></tr>
+        <tr><td>x0, y0</td><td>float</td><td>Anfangswerte</td></tr>
+        <tr><td>h</td><td>float</td><td>Schrittweite</td></tr>
+        <tr><td>xn</td><td>float</td><td>Endwert</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">RK4_Schrittweitensteuerung_Systems(f, x0, y0, xn, tol)</div>
+        <span class="week-badge t-ode">W12</span>
+      </div>
+      <div class="func-desc">RK4 mit adaptiver Schrittweitensteuerung für Systeme. Vergleicht einfachen und doppelten Schritt; passt h automatisch an.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y) für Systeme (Vektor)</td></tr>
+        <tr><td>x0, y0</td><td>float/array</td><td>Anfangswerte</td></tr>
+        <tr><td>xn</td><td>float</td><td>Endzeit</td></tr>
+        <tr><td>tol</td><td>float</td><td>Fehlertoleranz (default 1e-5)</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array (2D)</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- BLOCK 2: ODE Systeme                                             -->
+<!-- ================================================================ -->
+<section class="topic t-pdgl" id="odesys">
+  <div class="topic-header">
+    <div class="topic-dot"></div>
+    <div class="topic-title">ODE-Verfahren für Systeme (Vektoren)</div>
+    <div class="topic-count">4 Funktionen · W12</div>
+  </div>
+  <div class="func-grid">
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">eulerExplizit_Systems(f, x0, y0, xn, h)</div>
+        <span class="week-badge t-pdgl">W12</span>
+      </div>
+      <div class="func-desc">Explizites Euler für Vektorsysteme y' = f(x, y). y0 ist ein numpy-Array.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y), gibt np.array zurück</td></tr>
+        <tr><td>x0, y0</td><td>float, array</td><td>Anfangswerte</td></tr>
+        <tr><td>xn, h</td><td>float</td><td>Endwert, Schrittweite</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array (2D)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">eulerImplizit_Systems(f, d2f, x0, y0, xn, h)</div>
+        <span class="week-badge t-pdgl">W12</span>
+      </div>
+      <div class="func-desc">Implizites Euler für Systeme. Pro Schritt Newton-Lösung mit Jacobi-Matrix d2f.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y)</td></tr>
+        <tr><td>d2f</td><td>callable</td><td>Jacobi-Matrix ∂f/∂y</td></tr>
+        <tr><td>x0, y0</td><td>float, array</td><td>Anfangswerte</td></tr>
+        <tr><td>xn, h</td><td>float</td><td>Endwert, Schrittweite</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array (2D)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">Mittelpunktsregel_Impl_Systems(f, d2f, x0, y0, xn, h)</div>
+        <span class="week-badge t-pdgl">W12</span>
+      </div>
+      <div class="func-desc">Implizite Mittelpunktsregel für Systeme. Symplektisch – eignet sich für Energieerhaltung (z.B. Federsysteme).</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y)</td></tr>
+        <tr><td>d2f</td><td>callable</td><td>Jacobi-Matrix ∂f/∂y</td></tr>
+        <tr><td>x0, y0</td><td>float, array</td><td>Anfangswerte</td></tr>
+        <tr><td>xn, h</td><td>float</td><td>Endwert, Schrittweite</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x, y — np.array, np.array (2D)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">RK4step_Systems(x, y, f, h)</div>
+        <span class="week-badge t-pdgl">W12</span>
+      </div>
+      <div class="func-desc">Einzelner RK4-Schritt für Systeme. Gibt y_{n+1} zurück. Wird intern von RK4_Schrittweitensteuerung_Systems genutzt.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>x</td><td>float</td><td>Aktuelles x</td></tr>
+        <tr><td>y</td><td>array</td><td>Aktueller Zustandsvektor</td></tr>
+        <tr><td>f</td><td>callable</td><td>f(x, y)</td></tr>
+        <tr><td>h</td><td>float</td><td>Schrittweite</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">y_neu — np.array</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- BLOCK 3: Nullstellensuche / Newton                               -->
+<!-- ================================================================ -->
+<section class="topic t-null" id="null">
+  <div class="topic-header">
+    <div class="topic-dot"></div>
+    <div class="topic-title">Nullstellensuche – Newton-Verfahren</div>
+    <div class="topic-count">2 Funktionen · W9, W12</div>
+  </div>
+  <div class="func-grid">
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">newton(f, df, x, maxit=100)</div>
+        <span class="week-badge t-null">W9/W10</span>
+      </div>
+      <div class="func-desc">Newton-Verfahren für skalare Gleichungen f(x) = 0. Iteriert bis |delta| &lt; 1e-10 oder maxit Schritte.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>Funktion f(x)</td></tr>
+        <tr><td>df</td><td>callable</td><td>Ableitung f'(x)</td></tr>
+        <tr><td>x</td><td>float</td><td>Startwert</td></tr>
+        <tr><td>maxit</td><td>int</td><td>Max. Iterationen (default 100)</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x — float (Nullstelle)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">newtonSystems(g, dg, r, tol=1e-10, maxStep=100)</div>
+        <span class="week-badge t-null">W12</span>
+      </div>
+      <div class="func-desc">Newton-Verfahren für Gleichungssysteme g(r) = 0. Löst pro Schritt np.linalg.solve(dg(r), g(r)).</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>g</td><td>callable</td><td>Vektorfunktion g(r)</td></tr>
+        <tr><td>dg</td><td>callable</td><td>Jacobi-Matrix dg(r)</td></tr>
+        <tr><td>r</td><td>array</td><td>Startvektor</td></tr>
+        <tr><td>tol</td><td>float</td><td>Toleranz (default 1e-10)</td></tr>
+        <tr><td>maxStep</td><td>int</td><td>Max. Iterationen (default 100)</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">r — np.array (Nullstelle)</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- BLOCK 4: Lineare Gleichungssysteme                               -->
+<!-- ================================================================ -->
+<section class="topic t-lgs" id="lgs">
+  <div class="topic-header">
+    <div class="topic-dot"></div>
+    <div class="topic-title">Lineare Gleichungssysteme – LR-Zerlegung</div>
+    <div class="topic-count">5 Funktionen · W2, W3</div>
+  </div>
+  <div class="func-grid">
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">LR(A_in) — ohne Pivot</div>
+        <span class="week-badge t-lgs">W2</span>
+      </div>
+      <div class="func-desc">LR-Zerlegung (Gauss-Elimination) ohne Pivotisierung. Zerlegt A = L·R in untere und obere Dreiecksmatrix.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>A_in</td><td>np.array (n×n)</td><td>Quadratische Matrix</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">L, R — untere/obere Dreiecksmatrix</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">LR(A_in) — mit relativem Spaltenmax-Pivot</div>
+        <span class="week-badge t-lgs">W2</span>
+      </div>
+      <div class="func-desc">LR-Zerlegung mit relativer Spaltenmaximum-Pivotstrategie. Stabiler bei schlecht konditionierten Matrizen.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>A_in</td><td>np.array (n×n)</td><td>Quadratische Matrix</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">L, R, I — Matrizen + Indexvektor</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">pivot(A, I, k)</div>
+        <span class="week-badge t-lgs">W2</span>
+      </div>
+      <div class="func-desc">Hilfsfunktion: Bestimmt die Pivotzeile (relatives Spaltenmaximum) und tauscht Zeilen in A und dem Indexvektor I. Modifiziert A in-place.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>A</td><td>np.array</td><td>Matrix (wird in-place geändert)</td></tr>
+        <tr><td>I</td><td>np.array</td><td>Indexvektor (in-place)</td></tr>
+        <tr><td>k</td><td>int</td><td>Aktueller Schritt der Elimination</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">None (in-place)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">fbsub(L, R, b)</div>
+        <span class="week-badge t-lgs">W2/W3</span>
+      </div>
+      <div class="func-desc">Vorwärts- und Rückwärtseinsetzen. Löst L·y = b (Vorwärts), dann R·x = y (Rückwärts). Setzt LR-Zerlegung voraus.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>L</td><td>np.array (n×n)</td><td>Untere Dreiecksmatrix</td></tr>
+        <tr><td>R</td><td>np.array (n×n)</td><td>Obere Dreiecksmatrix</td></tr>
+        <tr><td>b</td><td>np.array (n,)</td><td>Rechte Seite</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x — np.array (Lösungsvektor)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">LR_tri(A)</div>
+        <span class="week-badge t-lgs">W3</span>
+      </div>
+      <div class="func-desc">LR-Zerlegung für Tridiagonalmatrizen. Speichert L und R kompakt in einer Matrix. Geeignet für sparse Systeme (z.B. BVP).</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>A</td><td>np.array (n×n)</td><td>Tridiagonale Matrix</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">LR — kompakte Matrix (L+R zusammen)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">linsolve(A, b)</div>
+        <span class="week-badge t-lgs">W2</span>
+      </div>
+      <div class="func-desc">Löst das LGS A·x = b direkt: führt LR-Zerlegung (mit Pivot) und fbsub durch. Wrapper-Funktion für den vollständigen Lösungsweg.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>A</td><td>np.array (n×n)</td><td>Systemmatrix</td></tr>
+        <tr><td>b</td><td>np.array (n,)</td><td>Rechte Seite</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x — np.array (Lösungsvektor)</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- BLOCK 5: Cholesky / symmetrische Systeme                         -->
+<!-- ================================================================ -->
+<section class="topic t-chol" id="chol">
+  <div class="topic-header">
+    <div class="topic-dot"></div>
+    <div class="topic-title">Cholesky-Zerlegung (sym. pos. def. Matrizen)</div>
+    <div class="topic-count">1 Funktion · W4, W5</div>
+  </div>
+  <div class="func-grid">
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">mychol(A)</div>
+        <span class="week-badge t-chol">W4/W5</span>
+      </div>
+      <div class="func-desc">Cholesky-Zerlegung A = L·L^T für symmetrische positiv definite Matrizen. Verwendet für Normalgleichungen in der Ausgleichsrechnung und beim Plattenkondensator (Laplace-Gleichung).</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>A</td><td>np.array (n×n)</td><td>Symmetrisch positiv definite Matrix (wird modifiziert!)</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">L — untere Dreiecksmatrix (L @ L.T == A)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">CPlatte(epsr, A, d)</div>
+        <span class="week-badge t-chol">W4</span>
+      </div>
+      <div class="func-desc">Berechnet die analytische Kapazität eines Plattenkondensators: C = ε₀·εᵣ·A/d.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>epsr</td><td>float</td><td>Relative Permittivität</td></tr>
+        <tr><td>A</td><td>float</td><td>Fläche der Elektrode [m²]</td></tr>
+        <tr><td>d</td><td>float</td><td>Abstand der Elektroden [m]</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">C — float (Kapazität in Farad)</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- BLOCK 6: Ausgleichsrechnung / QR                                 -->
+<!-- ================================================================ -->
+<section class="topic t-lsq" id="lsq">
+  <div class="topic-header">
+    <div class="topic-dot"></div>
+    <div class="topic-title">Ausgleichsrechnung – QR & Levenberg-Marquardt</div>
+    <div class="topic-count">6 Funktionen · W6, W8</div>
+  </div>
+  <div class="func-grid">
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">householder(a)</div>
+        <span class="week-badge t-lsq">W6</span>
+      </div>
+      <div class="func-desc">Berechnet eine Householder-Spiegelungsmatrix H für den Vektor a. H·a hat nur einen Nichtnulleintrag (ersten Eintrag).</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>a</td><td>np.array (n,)</td><td>Zu spiegelnder Vektor</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">H — np.array (n×n, orthogonale Matrix)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">QR(A)</div>
+        <span class="week-badge t-lsq">W6</span>
+      </div>
+      <div class="func-desc">QR-Zerlegung via Householder-Spiegelungen. A = Q·R, wobei Q orthogonal (Q^T·Q = E) und R obere Dreiecksmatrix.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>A</td><td>np.array (N×n)</td><td>Matrix mit N ≥ n</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">Q, R — np.array (N×N), np.array (N×n)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">backsub(R, y)</div>
+        <span class="week-badge t-lsq">W6</span>
+      </div>
+      <div class="func-desc">Rückwärtseinsetzen für rechteckige obere Dreiecksmatrix R (n×n Teil). Löst R·x = y[:n].</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>R</td><td>np.array (N×n)</td><td>Obere Dreiecksmatrix</td></tr>
+        <tr><td>y</td><td>np.array</td><td>Rechte Seite</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x — np.array (n,)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">lstsq(A, b)</div>
+        <span class="week-badge t-lsq">W6/W8</span>
+      </div>
+      <div class="func-desc">Lineares Ausgleichsproblem: minimiert ||A·x - b||². Nutzt QR-Zerlegung. In W8 mit np.linalg.qr + scipy.solve_triangular.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>A</td><td>np.array (N×n)</td><td>Designmatrix</td></tr>
+        <tr><td>b</td><td>np.array (N,)</td><td>Messwerte</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">x — np.array (n,) Parameter</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">scale(w, w0, s0) / scale(w)</div>
+        <span class="week-badge t-lsq">W6/W8</span>
+      </div>
+      <div class="func-desc">Skaliert Frequenzachse w auf [0, 1] zur Verbesserung der Konditionszahl. W6: skaliert auch w0 und s0 (Peak-Parameter). W8: nur Verschiebung.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>w</td><td>np.array</td><td>Frequenzwerte</td></tr>
+        <tr><td>w0</td><td>float</td><td>Peak-Frequenz (nur W6)</td></tr>
+        <tr><td>s0</td><td>float</td><td>Peak-Breite (nur W6)</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">ws [, w0s, s0s] — skalierte Werte</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">LM(f, J, p, beta0, beta1, mu, maxit)</div>
+        <span class="week-badge t-lsq">W8</span>
+      </div>
+      <div class="func-desc">Levenberg-Marquardt Algorithmus für nichtlineares Ausgleichsproblem. Kombination aus Gauß-Newton und Gradientenabstieg via Dämpfungsparameter μ.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>Modellfunktion f(*p)</td></tr>
+        <tr><td>J</td><td>callable</td><td>Jacobi-Matrix J(*p)</td></tr>
+        <tr><td>p</td><td>np.array</td><td>Startparameter</td></tr>
+        <tr><td>beta0</td><td>float</td><td>Schwelle: μ erhöhen (default 0.2)</td></tr>
+        <tr><td>beta1</td><td>float</td><td>Schwelle: μ verringern (default 0.8)</td></tr>
+        <tr><td>mu</td><td>float</td><td>Anfangsdämpfung (default 100)</td></tr>
+        <tr><td>maxit</td><td>int</td><td>Max. Iterationen (default 100)</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">p — np.array (optimierte Parameter)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">rho(f, J, p, delta)</div>
+        <span class="week-badge t-lsq">W8</span>
+      </div>
+      <div class="func-desc">Hilfsfunktion für LM: Berechnet Gütekoeffizient ρ. Vergleicht tatsächliche vs. linearisierte Residuumsverbesserung. ρ &lt; β₀ → μ rauf; ρ &gt; β₁ → μ runter.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>f</td><td>callable</td><td>Modellfunktion f(*p)</td></tr>
+        <tr><td>J</td><td>callable</td><td>Jacobi-Matrix J(*p)</td></tr>
+        <tr><td>p</td><td>np.array</td><td>Aktuelle Parameter</td></tr>
+        <tr><td>delta</td><td>np.array</td><td>Aktueller Korrekturschritt</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">ρ — float (Gütekoeffizient)</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- BLOCK 7: Roboterkinematik                                         -->
+<!-- ================================================================ -->
+<section class="topic t-kinem" id="kinem">
+  <div class="topic-header">
+    <div class="topic-dot"></div>
+    <div class="topic-title">Roboterkinematik (2-Gelenk-Roboter)</div>
+    <div class="topic-count">3 Funktionen · W7</div>
+  </div>
+  <div class="func-grid">
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">forwardKin(th1, th2)</div>
+        <span class="week-badge t-kinem">W7</span>
+      </div>
+      <div class="func-desc">Vorwärtskinematik: berechnet aus Gelenkwinkeln (th1, th2) die kartesischen Positionen des Ellbogens P und des Greifers T.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>th1</td><td>float [rad]</td><td>Winkel Glied 1 (Schulter)</td></tr>
+        <tr><td>th2</td><td>float [rad]</td><td>Winkel Glied 2 (Ellbogen)</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">P, T — je np.array([x, y])</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">plotPos(th1, th2)</div>
+        <span class="week-badge t-kinem">W7</span>
+      </div>
+      <div class="func-desc">Visualisiert die Roboterposition für gegebene Winkel. Zeichnet Arm und Gelenke in matplotlib.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>th1</td><td>float [rad]</td><td>Winkel Glied 1</td></tr>
+        <tr><td>th2</td><td>float [rad]</td><td>Winkel Glied 2</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">None (matplotlib plot)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">backwardKin(x, y, tol=1e-6)</div>
+        <span class="week-badge t-kinem">W7</span>
+      </div>
+      <div class="func-desc">Rückwärtskinematik: findet Gelenkwinkel (th1, th2) für eine gewünschte Greiferposition (x, y). Nutzt Newton-Iteration auf dem Gleichungssystem mit Jacobi-Matrix.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>x, y</td><td>float</td><td>Gewünschte Greiferposition</td></tr>
+        <tr><td>tol</td><td>float</td><td>Toleranz (default 1e-6)</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">th1, th2 — float, float [rad]</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- BLOCK 8: Anwendungsfunktionen (W12)                              -->
+<!-- ================================================================ -->
+<section class="topic t-diff" id="apps">
+  <div class="topic-header">
+    <div class="topic-dot"></div>
+    <div class="topic-title">Anwendungsmodelle (Feder-Dämpfer-System)</div>
+    <div class="topic-count">3 Funktionen · W12</div>
+  </div>
+  <div class="func-grid">
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">FederSystem(t, y)</div>
+        <span class="week-badge t-diff">W12</span>
+      </div>
+      <div class="func-desc">Rechte Seite des DGL-Systems für eine Kugel an einer Feder mit Luftwiderstand. y[0] = Ort x, y[1] = Geschwindigkeit v.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>t</td><td>float</td><td>Zeit (nicht explizit genutzt)</td></tr>
+        <tr><td>y</td><td>np.array([x, v])</td><td>Zustandsvektor: Ort und Geschwindigkeit</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">np.array([dx/dt, dv/dt])</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">Jaccobi_FederSystem(t, y)</div>
+        <span class="week-badge t-diff">W12</span>
+      </div>
+      <div class="func-desc">Jacobi-Matrix ∂f/∂y des Feder-Systems. Benötigt für implizite ODE-Verfahren. Analytisch berechnet.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>t</td><td>float</td><td>Zeit</td></tr>
+        <tr><td>y</td><td>np.array([x, v])</td><td>Zustandsvektor</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">np.array (2×2 Jacobi-Matrix)</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">berechne_energie(y_ergebnisse, ks, m, g)</div>
+        <span class="week-badge t-diff">W12</span>
+      </div>
+      <div class="func-desc">Berechnet die Gesamtenergie (potentiell + kinetisch) des Feder-Kugel-Systems. E = ½·ks·(x - mg/ks)² + ½·m·v²</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>y_ergebnisse</td><td>np.array (N×2)</td><td>Lösung: Spalte 0 = Ort, Spalte 1 = Geschwindigkeit</td></tr>
+        <tr><td>ks</td><td>float</td><td>Federkonstante [N/m]</td></tr>
+        <tr><td>m</td><td>float</td><td>Masse [kg]</td></tr>
+        <tr><td>g</td><td>float</td><td>Erdbeschleunigung [m/s²]</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">E — np.array (Energie über Zeit)</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- BLOCK 9: Partielle DGL (W13)                                     -->
+<!-- ================================================================ -->
+<section class="topic t-pdgl" id="pdgl">
+  <div class="topic-header">
+    <div class="topic-dot"></div>
+    <div class="topic-title">Partielle DGL – Wärmeleitung (W13)</div>
+    <div class="topic-count">Keine eigenen Funktionen – Algorithmen direkt im Code · W13</div>
+  </div>
+  <div class="func-grid">
+    <div class="func-card" style="grid-column: 1 / -1;">
+      <div class="func-name" style="margin-bottom:0.5rem">FTCS – Forward Time Centered Space</div>
+      <div class="func-desc">
+        Explizites Schema für die Wärmeleitungsgleichung ∂T/∂t = a·∂²T/∂x². Stabil wenn s = τ·a/h² ≤ 0.5.<br><br>
+        <code style="font-family: 'IBM Plex Mono'; font-size:12px; color:var(--green)">T[1, 1:-1] = s * (T[0, 2:] + T[0, :-2]) + (1 - 2*s) * T[0, 1:-1]</code><br><br>
+        Mit Neumann-RB (Fluss): T[1, 0] = 2s·(T[0, 1] – T[0, 0] – h·l(t)) + T[0, 0]
+      </div>
+      <div class="section-label">Schlüsselvariablen</div>
+      <table>
+        <tr><th>Variable</th><th>Bedeutung</th></tr>
+        <tr><td>s</td><td>Stabilitätszahl s = τ·a/h² (muss &lt; 0.5 sein)</td></tr>
+        <tr><td>tau</td><td>Zeitschritt</td></tr>
+        <tr><td>h</td><td>Ortsschritt</td></tr>
+        <tr><td>a</td><td>Temperaturleitfähigkeit [m²/s]</td></tr>
+      </table>
+    </div>
+    <div class="func-card" style="grid-column: 1 / -1;">
+      <div class="func-name" style="margin-bottom:0.5rem">Crank-Nicolson (implizit, W13)</div>
+      <div class="func-desc">
+        Implizites Schema, Ordnung 2 in Zeit und Ort. Unbedingt stabil. Löst pro Zeitschritt ein tridiagonales LGS mit <code style="font-family:'IBM Plex Mono';font-size:12px;color:var(--green)">scipy.linalg.solve_banded</code>.
+      </div>
+      <div class="section-label">Wichtige Parameter der Bandmatrix</div>
+      <table>
+        <tr><th>Variable</th><th>Formel</th><th>Bedeutung</th></tr>
+        <tr><td>alpha</td><td>a / (2h²)</td><td>Nebendiagonale</td></tr>
+        <tr><td>beta</td><td>1/τ + a/h²</td><td>Hauptdiagonale</td></tr>
+        <tr><td>gamma</td><td>1/τ – a/h²</td><td>Koeffizient rechte Seite</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const id = a.getAttribute('href').slice(1);
+    document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+});
+</script>
+</body>
+</html>
