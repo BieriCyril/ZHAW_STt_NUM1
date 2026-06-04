@@ -266,6 +266,7 @@
     <a href="#chol">Cholesky / Faktoris.</a>
     <a href="#kinem">Roboterkinematik</a>
     <a href="#pdgl">Part. DGL</a>
+    <a href="#spline">Spline</a>
   </nav>
 </header>
 
@@ -1021,6 +1022,62 @@
         <tr><td>gamma</td><td>1/τ – a/h²</td><td>Koeffizient rechte Seite</td></tr>
       </table>
     </div>
+  </div>
+</section>
+
+
+<!-- ================================================================ -->
+<!-- BLOCK 10: Spline-Interpolation (W14)                             -->
+<!-- ================================================================ -->
+<section class="topic t-null" id="spline">
+  <div class="topic-header">
+    <div class="topic-dot"></div>
+    <div class="topic-title">Kubische Spline-Interpolation (periodisch)</div>
+    <div class="topic-count">2 Funktionen · W14</div>
+  </div>
+  <div class="func-grid">
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">momentePer(y)</div>
+        <span class="week-badge t-null">W14</span>
+      </div>
+      <div class="func-desc">Berechnet die Momente m (zweite Ableitungen) für einen periodischen kubischen Spline. Löst ein zyklisches tridiagonales LGS (Bedingung: S'(x₀) = S'(xₙ)). Die globale Schrittweite <code style="font-family:'IBM Plex Mono';font-size:11px;color:var(--coral)">h</code> muss als globale Variable vorhanden sein.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>y</td><td>np.array (N+1,)</td><td>Stützwerte y₀, y₁, …, yₙ (äquidistant)</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">m — np.array (N+1,) Momente (m[0] == m[-1])</span>
+    </div>
+
+    <div class="func-card">
+      <div class="func-head">
+        <div class="func-name">splineval(m, x, y, xx, der=0)</div>
+        <span class="week-badge t-null">W14</span>
+      </div>
+      <div class="func-desc">Wertet den kubischen Spline (oder seine Ableitungen) an beliebigen Punkten xx aus. Nutzt die Momente aus <code style="font-family:'IBM Plex Mono';font-size:11px;color:var(--coral)">momentePer</code>. Unterstützt Ableitungen 0–3. Globale Variable <code style="font-family:'IBM Plex Mono';font-size:11px;color:var(--coral)">h</code> muss gesetzt sein.</div>
+      <div class="section-label">Parameter</div>
+      <table>
+        <tr><th>Name</th><th>Typ</th><th>Beschreibung</th></tr>
+        <tr><td>m</td><td>np.array</td><td>Momente (Ausgabe von momentePer)</td></tr>
+        <tr><td>x</td><td>np.array</td><td>Stützstellen x₀, …, xₙ</td></tr>
+        <tr><td>y</td><td>np.array</td><td>Stützwerte y₀, …, yₙ</td></tr>
+        <tr><td>xx</td><td>np.array</td><td>Auswertungspunkte (fein aufgelöst)</td></tr>
+        <tr><td>der</td><td>int</td><td>Ableitungsordnung: 0=Wert, 1=S', 2=S'', 3=S''' (default 0)</td></tr>
+      </table>
+      <div class="section-label">Rückgabe</div>
+      <span class="output-val">yy — np.array (Splinewerte an xx)</span>
+      <div class="section-label" style="margin-top:0.75rem">Typischer Aufruf</div>
+      <div style="font-family:'IBM Plex Mono';font-size:11px;color:var(--text2);line-height:1.8">
+        h = x[1] - x[0] &nbsp;&nbsp;<span style="color:var(--text3)"># global setzen!</span><br>
+        m = momentePer(y)<br>
+        yy = splineval(m, x, y, xx, der=0) &nbsp;&nbsp;<span style="color:var(--text3)"># Splinekurve</span><br>
+        dy = splineval(m, x, y, xx, der=1) &nbsp;&nbsp;<span style="color:var(--text3)"># Ableitung S'</span>
+      </div>
+    </div>
+
   </div>
 </section>
 
