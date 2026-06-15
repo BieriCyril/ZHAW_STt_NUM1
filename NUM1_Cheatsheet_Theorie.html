@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Numerik — Theorie Cheatsheet</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: system-ui, sans-serif; background: #0d1117; color: #e6edf3; font-size: 14px; line-height: 1.6; padding: 1.5rem; max-width: 900px; margin: 0 auto; }
+h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.2rem; color: #e6edf3; }
+.subtitle { color: #8b949e; font-size: 13px; margin-bottom: 2rem; }
+
+.section { margin-bottom: 2rem; border: 1px solid #30363d; border-radius: 10px; overflow: hidden; }
+.section-head { padding: 0.8rem 1.1rem; display: flex; align-items: center; gap: 10px; background: #161b22; border-bottom: 1px solid #30363d; }
+.dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+.section-title { font-size: 15px; font-weight: 700; }
+.tag { font-size: 11px; padding: 2px 9px; border-radius: 20px; margin-left: auto; font-weight: 700; }
+.body { padding: 1rem; background: #0d1117; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 0.85rem 1rem; }
+.card-title { font-size: 13px; font-weight: 700; color: #e6edf3; margin-bottom: 0.6rem; letter-spacing: 0.01em; }
+
+.row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+@media(max-width:620px) { .row, .row2 { grid-template-columns: 1fr; } }
+
+/* Pill labels */
+.pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 20px; margin-right: 4px; margin-bottom: 4px; }
+.p-given  { background:#1a3a24; color:#3fb950; }
+.p-find   { background:#1f3a5c; color:#58a6ff; }
+.p-key    { background:#3a2a0a; color:#d29922; }
+.p-warn   { background:#3a1a12; color:#f78166; }
+.p-info   { background:#2d1f55; color:#a371f7; }
+
+/* Step list */
+ol.steps { padding-left: 1.2rem; color: #8b949e; font-size: 13px; }
+ol.steps li { padding: 3px 0; line-height: 1.6; }
+ol.steps li b { color: #e6edf3; }
+ul.kw { list-style: none; padding: 0; font-size: 13px; color: #8b949e; }
+ul.kw li::before { content: "→ "; color: #d29922; font-weight: 700; }
+ul.kw li { padding: 2px 0; }
+
+.formula { font-family: 'Courier New', monospace; font-size: 12px; color: #a371f7; background: #1c1228; border-left: 3px solid #a371f7; padding: 5px 10px; border-radius: 0 6px 6px 0; margin: 5px 0; display: block; line-height: 1.7; }
+.formula-blue { font-family: 'Courier New', monospace; font-size: 12px; color: #58a6ff; background: #0d1f35; border-left: 3px solid #58a6ff; padding: 5px 10px; border-radius: 0 6px 6px 0; margin: 5px 0; display: block; line-height: 1.7; }
+.formula-green { font-family: 'Courier New', monospace; font-size: 12px; color: #3fb950; background: #0d1f12; border-left: 3px solid #3fb950; padding: 5px 10px; border-radius: 0 6px 6px 0; margin: 5px 0; display: block; line-height: 1.7; }
+
+.note { font-size: 12px; color: #8b949e; font-style: italic; margin-top: 5px; }
+.warn-box { font-size: 12px; color: #f78166; background: #1e100a; border-radius: 6px; padding: 5px 10px; margin-top: 6px; border-left: 3px solid #f78166; }
+.info-box { font-size: 12px; color: #58a6ff; background: #0a1220; border-radius: 6px; padding: 5px 10px; margin-top: 6px; border-left: 3px solid #388bfd; }
+.divider { border: none; border-top: 1px solid #21262d; margin: 0.5rem 0; }
+</style>
+</head>
+<body>
+
+<h1>Numerik — Theorie &amp; Kochrezepte</h1>
+<div class="subtitle">ZHAW · Prüfungsvorbereitung · Schlagwörter · Gesucht · Vorgehen</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 1. KONDITION -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#388bfd"></div>
+    <div class="section-title" style="color:#388bfd">1 · Kondition eines linearen Gleichungssystems</div>
+    <span class="tag" style="background:#1f3a5c;color:#388bfd">LGS / Fehler</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Wie stark verstärkt das LGS einen Fehler in den Eingabedaten? Eine schlecht konditionierte Matrix vergrössert kleine Fehler in <b>b</b> zu grossen Fehlern in <b>x</b>.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>relativer Fehler</li>
+          <li>1-Norm / ∞-Norm</li>
+          <li>Näherungslösung x̃ ≈ x</li>
+          <li>rechte Seite b̃ ≈ b</li>
+          <li>A⁻¹ wird gegeben</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> Matrix A, A⁻¹, rel. Fehler von x̃<br><br>
+        <span class="pill p-find">Gesucht</span> Konditionszahl cond(A)<br>
+        <span class="pill p-find">Gesucht</span> minimaler rel. Fehler von b̃
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept</div>
+      <div class="row2">
+        <div>
+          <ol class="steps">
+            <li><b>Norm von A berechnen</b><br>1-Norm = grösste Spaltensumme der Beträge<br>∞-Norm = grösste Zeilensumme der Beträge</li>
+            <li><b>Norm von A⁻¹ berechnen</b> (gleiche Norm!)</li>
+            <li><b>Konditionszahl:</b><br><span class="formula">cond(A) = ‖A‖ · ‖A⁻¹‖</span></li>
+            <li><b>Fehlerbeziehung:</b><br><span class="formula">‖Δx‖/‖x‖  ≤  cond(A) · ‖Δb‖/‖b‖</span>Umformen nach ‖Δb‖/‖b‖:<br><span class="formula">rel. Fehler(b) ≥ rel. Fehler(x) / cond(A)</span></li>
+          </ol>
+        </div>
+        <div>
+          <div class="note">1-Norm Beispiel: Spalte 1 hat Summe 11, Spalte 2 hat Summe 6 → ‖A‖₁ = 11</div>
+          <div class="info-box">Grosse Konditionszahl (z.B. 10⁶) = schlecht konditioniert = kleine Fehler in b führen zu grossen Fehlern in x</div>
+          <div class="warn-box">Immer dieselbe Norm für A und A⁻¹ verwenden!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 2. RANDWERTPROBLEM / FDM -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#a371f7"></div>
+    <div class="section-title" style="color:#a371f7">2 · Lineares Randwertproblem (Finite-Differenzen-Methode)</div>
+    <span class="tag" style="background:#2d1f55;color:#a371f7">RWP / FDM</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Eine DGL mit Bedingungen an <b>beiden Enden</b> des Intervalls (nicht Anfangsbedingungen!). Man diskretisiert das Intervall und ersetzt Ableitungen durch Differenzenquotienten → LGS.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>Randwertproblem (RWP)</li>
+          <li>y(a) = ..., y(b) = ... (Randbed.)</li>
+          <li>zentrale Differenzenquotienten</li>
+          <li>Ordnung 2</li>
+          <li>äquidistante Knoten x₀…x_{N+1}</li>
+          <li>Schablone / Diskretisierung</li>
+          <li>Finite-Differenzen-Methode</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> DGL y'' + p(x)y' + q(x)y = r(x)<br>
+        <span class="pill p-given">Gegeben</span> Randwerte y(a), y(b)<br>
+        <span class="pill p-given">Gegeben</span> Anzahl Schritte N<br><br>
+        <span class="pill p-find">Gesucht</span> Schablone (Koeffizienten)<br>
+        <span class="pill p-find">Gesucht</span> Systemmatrix und rechte Seite<br>
+        <span class="pill p-find">Gesucht</span> maximaler Fehler vs. exakte Lösung
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept</div>
+      <ol class="steps">
+        <li><b>Schrittweite:</b> h = (b − a) / (N+1),  Knoten: xᵢ = a + i·h  für i = 0…N+1</li>
+        <li><b>Ableitungen ersetzen</b> (zentral, Ordnung 2):
+          <span class="formula">y'(xᵢ)  ≈  (yᵢ₊₁ − yᵢ₋₁) / (2h)
+y''(xᵢ) ≈  (yᵢ₋₁ − 2yᵢ + yᵢ₊₁) / h²</span></li>
+        <li><b>In DGL einsetzen</b> → pro innerem Knoten eine Gleichung mit (yᵢ₋₁, yᵢ, yᵢ₊₁)</li>
+        <li><b>Schablone aufschreiben:</b> Koeffizienten vor yᵢ₋₁, yᵢ, yᵢ₊₁ (und rechte Seite)</li>
+        <li><b>LGS aufstellen:</b> tridiagonale Matrix, Randwerte in rechte Seite schieben (yᵢ₋₁ und yᵢ₊₁ am Rand sind bekannt!)</li>
+        <li><b>LGS lösen</b> → innere Werte y₁…y_N</li>
+        <li><b>Fehler:</b> max|yᵢ_num − yᵢ_exakt| über alle Knoten</li>
+      </ol>
+      <div class="info-box" style="margin-top:0.6rem">Konvergenzordnung prüfen: Fehler sollte sich bei Halbierung von h ungefähr vierteln (Ordnung 2)</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 3. LINEARE AUSGLEICHSRECHNUNG -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#d29922"></div>
+    <div class="section-title" style="color:#d29922">3 · Lineare Ausgleichsrechnung (Kleinste Quadrate / QR)</div>
+    <span class="tag" style="background:#3a2a0a;color:#d29922">Least Squares</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Mehr Messdaten als Unbekannte → überbestimmtes System, keine exakte Lösung. Gesucht sind Parameter, die die <b>Summe der quadratischen Abweichungen minimieren</b>.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>Methode der kleinsten Quadrate</li>
+          <li>Datenpunkte (xᵢ, yᵢ)</li>
+          <li>Modell y = a·f₁(x) + b·f₂(x) + ...</li>
+          <li>Parameter a, b, c bestimmen</li>
+          <li>QR-Zerlegung verwenden</li>
+          <li>Summe der Fehlerquadrate</li>
+          <li>lineares Modell in den Parametern</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> Datenpunkte (CSV oder Tabelle)<br>
+        <span class="pill p-given">Gegeben</span> Modellstruktur (Basisfunktionen)<br><br>
+        <span class="pill p-find">Gesucht</span> Parameter (a, b, c, ...)<br>
+        <span class="pill p-find">Gesucht</span> Summe der Fehlerquadrate ‖Ax − b‖²
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept — QR-Zerlegung</div>
+      <ol class="steps">
+        <li><b>Designmatrix A aufstellen</b> (Grösse: Anzahl Datenpunkte × Anzahl Parameter)<br>Jede Spalte = eine Basisfunktion ausgewertet an allen xᵢ<br>
+          <span class="formula">A[i,j] = fⱼ(xᵢ)</span></li>
+        <li><b>Rechte Seite b</b> = Vektor der yᵢ-Werte</li>
+        <li><b>QR-Zerlegung von A:</b> A = Q·R</li>
+        <li><b>Lösung durch Rückwärtseinsetzen:</b>
+          <span class="formula">R · p = Qᵀ · b   →   p = R⁻¹(Qᵀb)</span></li>
+        <li><b>Fehlerquadrate:</b> residuen = b − A·p,  SSE = Σ residuenᵢ²</li>
+      </ol>
+      <hr class="divider">
+      <div class="card-title" style="margin-top:0.5rem">Sonderfall: Linearisierung (z.B. Aufgabe 4)</div>
+      <ol class="steps">
+        <li>Modell nicht linear in Parametern → <b>Logarithmieren / Transformation</b></li>
+        <li>Beispiel: I = (U₀/R)·e^(−t/(RC))  →  ln(I) = ln(U₀/R) + (−1/(RC))·t</li>
+        <li>Jetzt ist ln(I) linear in den neuen Parametern → normales Vorgehen wie oben</li>
+        <li>Am Ende Rücktransformation (exp) für die gesuchten physikalischen Grössen</li>
+      </ol>
+      <div class="warn-box">Linearisierung verändert die Gewichtung der Fehler — nur bei kleinen Residuen vertretbar!</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Cholesky LDLᵀ (Normalgleichungen, von Hand)</div>
+      <ol class="steps">
+        <li>Normalgleichung: <span class="formula">AᵀA · p = Aᵀb</span></li>
+        <li>AᵀA ist symmetrisch positiv definit → Cholesky-Zerlegung möglich</li>
+        <li>LDLᵀ-Zerlegung: AᵀA = L·D·Lᵀ (L = untere Dreiecksmatrix, D = Diagonalmatrix)</li>
+        <li>Lösung in 3 Schritten: Vorwärtseinsetzen (Lz=b), Diagonalschritt (Dy=z), Rückwärtseinsetzen (Lᵀp=y)</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 4. NICHTLINEARE GLEICHUNGSSYSTEME -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#3fb950"></div>
+    <div class="section-title" style="color:#3fb950">4 · Nichtlineare Gleichungssysteme (Newton-Verfahren)</div>
+    <span class="tag" style="background:#1a3a24;color:#3fb950">Newton</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Zwei oder mehr nichtlineare Gleichungen in mehreren Unbekannten. Newton linearisiert das System iterativ mit der Jacobi-Matrix und konvergiert quadratisch gegen eine Lösung.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>nichtlineares Gleichungssystem</li>
+          <li>reelle Lösungen berechnen</li>
+          <li>ganzzahlige Startwerte</li>
+          <li>tol = 10⁻⁹</li>
+          <li>Anzahl Schritte angeben</li>
+          <li>erste zwei Schritte angeben</li>
+          <li>Hinweis auf Lösungsort (Kreisscheibe, Quadrant)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> System g₁(x,y)=0, g₂(x,y)=0<br>
+        <span class="pill p-given">Gegeben</span> Startwerte, Toleranz<br><br>
+        <span class="pill p-find">Gesucht</span> Alle reellen Lösungen<br>
+        <span class="pill p-find">Gesucht</span> Werte nach Schritt 1 und 2<br>
+        <span class="pill p-find">Gesucht</span> Anzahl Schritte bis Konvergenz
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept — Newton für Systeme</div>
+      <div class="row2">
+        <div>
+          <ol class="steps">
+            <li><b>Residuenvektor aufschreiben:</b><br>g(r) = [g₁(x,y), g₂(x,y)]ᵀ</li>
+            <li><b>Jacobi-Matrix berechnen</b> (alle partiellen Ableitungen):<br>
+              <span class="formula">J = | ∂g₁/∂x  ∂g₁/∂y |
+    | ∂g₂/∂x  ∂g₂/∂y |</span></li>
+            <li><b>Newton-Iteration:</b><br>
+              <span class="formula">δ = J(rₙ)⁻¹ · g(rₙ)
+rₙ₊₁ = rₙ − δ</span></li>
+            <li><b>Abbruch wenn</b> ‖δ‖ &lt; tol</li>
+            <li><b>Verschiedene Startwerte</b> für verschiedene Lösungen!</li>
+          </ol>
+        </div>
+        <div>
+          <div class="info-box">Im Praktikum: newtonSystems(g, dg, r0, tol) aufrufen</div>
+          <div class="warn-box">Pro Lösung einen anderen Startwert → Hinweis im Aufgabentext beachten!</div>
+          <div class="note" style="margin-top:0.5rem">Für die Prüfung: ersten Schritt von Hand ausrechnen = Schritt 1 und 2 zeigen.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 5. NICHTLINEARE AUSGLEICHSRECHNUNG -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#f78166"></div>
+    <div class="section-title" style="color:#f78166">5 · Nichtlineare Ausgleichsrechnung (Gauss-Newton)</div>
+    <span class="tag" style="background:#3a1a12;color:#f78166">Gauss-Newton</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Wie lineare Ausgleichsrechnung, aber das Modell ist <b>nichtlinear in den Parametern</b>. Gauss-Newton linearisiert iterativ mit der Jacobi-Matrix.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>nichtlineares Ausgleichsproblem</li>
+          <li>Gauss-Newton-Verfahren</li>
+          <li>Startwerte A₀, B₀, C₀</li>
+          <li>Jacobi-Matrix angeben</li>
+          <li>überbestimmtes nichtlineares System</li>
+          <li>tol = 10⁻⁹</li>
+          <li>Werte nach Schritt 1 und 2</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> Datenpunkte (xᵢ, yᵢ)<br>
+        <span class="pill p-given">Gegeben</span> Modellfunktion φ(x; A,B,C)<br>
+        <span class="pill p-given">Gegeben</span> Startwerte für Parameter<br><br>
+        <span class="pill p-find">Gesucht</span> Überbestimmtes System f(p) = 0<br>
+        <span class="pill p-find">Gesucht</span> Jacobi-Matrix von f<br>
+        <span class="pill p-find">Gesucht</span> Parameter A, B, C nach Iteration
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept</div>
+      <ol class="steps">
+        <li><b>Residuenvektor aufstellen</b> (Grösse: Anzahl Datenpunkte):<br>
+          <span class="formula">fᵢ(p) = φ(xᵢ; p) − yᵢ   für alle i</span></li>
+        <li><b>Jacobi-Matrix J</b> (Grösse: n_Daten × n_Parameter):<br>
+          <span class="formula">J[i,j] = ∂fᵢ/∂pⱼ = ∂φ(xᵢ;p)/∂pⱼ</span>
+          Jede Spalte = partielle Ableitung nach einem Parameter</li>
+        <li><b>Gauss-Newton-Schritt:</b><br>
+          <span class="formula">JᵀJ · Δp = −Jᵀf(p)
+p_neu = p + Δp</span></li>
+        <li><b>Abbruch wenn</b> ‖Δp‖ &lt; tol</li>
+      </ol>
+      <div class="info-box">JᵀJ ist ein kleines quadratisches LGS (Grösse: Anzahl Parameter) — viel kleiner als das überbestimmte System!</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 6. ODE — EINSCHRITTVERFAHREN -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#388bfd"></div>
+    <div class="section-title" style="color:#388bfd">6 · Gewöhnliche DGL — Einschrittverfahren (Euler, RK4)</div>
+    <span class="tag" style="background:#1f3a5c;color:#388bfd">ODE / AWP</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Anfangswertproblem (AWP): DGL mit Startwert y(x₀) = y₀. Schrittweise Näherung der Lösung von x₀ bis xₙ. Verschiedene Verfahren haben unterschiedliche <b>Genauigkeit (Ordnung)</b> und <b>Stabilität</b>.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>Anfangswertproblem (AWP)</li>
+          <li>y(x₀) = y₀ (Anfangsbedingung)</li>
+          <li>Runge-Kutta / RK4</li>
+          <li>explizites / implizites Euler</li>
+          <li>N Schritte, Schrittweite h</li>
+          <li>globaler Fehler an der Endstelle</li>
+          <li>Konvergenzordnung bestimmen</li>
+          <li>Butcher-Tableau</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> DGL y' = f(x, y)<br>
+        <span class="pill p-given">Gegeben</span> Anfangswert y(x₀) = y₀<br>
+        <span class="pill p-given">Gegeben</span> Endpunkt X, Anzahl Schritte N<br>
+        <span class="pill p-given">Gegeben</span> Referenzwert y(X) (exakt)<br><br>
+        <span class="pill p-find">Gesucht</span> Numerische Lösung y_N ≈ y(X)<br>
+        <span class="pill p-find">Gesucht</span> Fehler |y_N − y(X)|<br>
+        <span class="pill p-find">Gesucht</span> Konvergenzordnung p
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">DGL 2. Ordnung → System 1. Ordnung (immer erster Schritt!)</div>
+      <span class="formula">y'' = g(x, y, y')   →   u = [y, y'],   u' = [y',  g(x, y, y')]</span>
+      <div class="note">Anfangswert: u(x₀) = [y(x₀), y'(x₀)]. Lösung: u[0] = y(x)</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Verfahren im Überblick</div>
+      <div class="row2">
+        <div>
+          <ol class="steps">
+            <li><b>Explizites Euler</b> (Ordnung 1, einfach, kann instabil sein):<br>
+              <span class="formula-green">y_{n+1} = yₙ + h · f(xₙ, yₙ)</span></li>
+            <li><b>Implizites Euler</b> (Ordnung 1, stabil, Newton-Schritt nötig):<br>
+              <span class="formula-green">y_{n+1} = yₙ + h · f(x_{n+1}, y_{n+1})</span></li>
+            <li><b>Mittelpunktsregel</b> (Ordnung 2, explizit):<br>
+              <span class="formula-green">k₁ = f(xₙ, yₙ)
+k₂ = f(xₙ+h/2, yₙ+h/2·k₁)
+y_{n+1} = yₙ + h·k₂</span></li>
+          </ol>
+        </div>
+        <div>
+          <ol class="steps" start="4">
+            <li><b>RK4</b> (Ordnung 4, Standard):<br>
+              <span class="formula-green">k₁ = f(xₙ,     yₙ)
+k₂ = f(xₙ+h/2, yₙ+h/2·k₁)
+k₃ = f(xₙ+h/2, yₙ+h/2·k₂)
+k₄ = f(xₙ+h,   yₙ+h·k₃)
+y_{n+1} = yₙ + h/6·(k₁+2k₂+2k₃+k₄)</span></li>
+          </ol>
+          <div class="info-box">Konvergenzordnung p: Fehler halbiert sich bei h→h/2 um Faktor 2^p. Euler: 2^1=2, RK4: 2^4=16</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Butcher-Tableau lesen</div>
+      <div class="row2">
+        <div>
+          <span class="formula">c | A
+  | b
+──────────────
+Explizit:  A strikt untere Dreiecksmatrix
+Implizit:  A hat Diagonaleinträge ≠ 0
+
+Anzahl Stufen = Anzahl Zeilen von A
+Koeffizienten:
+  c_i = Zeitpunkt des Schrittes
+  a_ij = Gewichte der Steigungen
+  b_i  = finale Gewichtung</span>
+        </div>
+        <div>
+          <ol class="steps">
+            <li>Tableau ablesen → cᵢ, aᵢⱼ, bᵢ identifizieren</li>
+            <li>Steigungsform aufschreiben: kᵢ = f(xₙ + cᵢ·h, yₙ + h·Σⱼ aᵢⱼ·kⱼ)</li>
+            <li>y_{n+1} = yₙ + h·Σᵢ bᵢ·kᵢ</li>
+          </ol>
+          <div class="warn-box">Diagonale ≠ 0 → implizit (DIRK). Prüfen ob kᵢ von sich selbst abhängt!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 7. STABILITÄT -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#39d353"></div>
+    <div class="section-title" style="color:#39d353">7 · Stabilität von ODE-Verfahren</div>
+    <span class="tag" style="background:#1a3015;color:#39d353">Stabilität</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Ab wann "explodiert" die numerische Lösung? Bei zu grosser Schrittweite h kann ein Verfahren instabil werden und riesige Fehler erzeugen, obwohl die exakte Lösung beschränkt bleibt.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>Stabilitätsbedingung aufstellen</li>
+          <li>Jacobi-Matrix J(t)</li>
+          <li>Eigenwerte λ von J</li>
+          <li>explizites Euler instabil</li>
+          <li>Schrittweite h₁ stabil, h₂ instabil</li>
+          <li>Verhalten der numerischen Lösung</li>
+          <li>Modellgleichung nichtlinearer Schwingkreis</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> DGL-System (oft nichtlinear)<br>
+        <span class="pill p-given">Gegeben</span> Parameter b, Startwert<br>
+        <span class="pill p-given">Gegeben</span> Zwei Schrittweiten h₁, h₂<br><br>
+        <span class="pill p-find">Gesucht</span> System 1. Ordnung (Umschreiben)<br>
+        <span class="pill p-find">Gesucht</span> Jacobi-Matrix J(t)<br>
+        <span class="pill p-find">Gesucht</span> Stabilitätsbedingung für h<br>
+        <span class="pill p-find">Gesucht</span> Interpretation der Plots
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept</div>
+      <div class="row2">
+        <div>
+          <ol class="steps">
+            <li><b>DGL 2. Ordnung → System 1. Ordnung:</b><br>u = [x, ẋ], dann u' = [ẋ, x''] explizit</li>
+            <li><b>Jacobi-Matrix berechnen:</b><br>
+              <span class="formula">J = ∂f/∂u   (alle partiellen Ableitungen)</span>
+              An einem Punkt auswerten (z.B. t=0, Startwert)</li>
+            <li><b>Eigenwerte λ₁, λ₂ von J berechnen</b></li>
+            <li><b>Stabilitätsbedingung explizites Euler:</b><br>
+              <span class="formula">|1 + h·λ| ≤ 1  für alle EW λ</span>
+              → h &lt; 2/|Re(λ)| bei rein imaginären oder negativen EW</li>
+          </ol>
+        </div>
+        <div>
+          <div class="info-box">Implizites Euler ist <b>unbedingt stabil</b> — funktioniert für alle h (aber Fehler wächst bei grossem h)</div>
+          <div class="warn-box">h₁ stabil → beschränkte Schwingung im Plot.<br>h₂ instabil → Lösung wächst exponentiell/explodiert!</div>
+          <div class="note" style="margin-top:0.5rem">Implizites Euler pro Schritt: Newton-Iteration lösen, da y_{n+1} auf beiden Seiten auftaucht.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 8. ODE-SYSTEME -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#58a6ff"></div>
+    <div class="section-title" style="color:#58a6ff">8 · Systeme von DGL (Aufgabe 9)</div>
+    <span class="tag" style="background:#0d2040;color:#58a6ff">ODE-System</span>
+  </div>
+  <div class="body">
+    <div class="row2">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Mehrere gekoppelte DGL 1. Ordnung in Vektorform: <b>y' = A(x)·y</b>. Euler/RK4 funktionieren genauso, aber mit Vektoren statt Skalaren.</p>
+        <div class="card-title" style="margin-top:0.8rem">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> Systemmatrix A(x), Anfangsvektor y₀<br>
+        <span class="pill p-given">Gegeben</span> Exakte Lösung (zum Vergleich)<br>
+        <span class="pill p-given">Gegeben</span> Schrittweiten h<br><br>
+        <span class="pill p-find">Gesucht</span> Absoluter Fehler ‖y_h(X) − y(X)‖ an Stellen X<br>
+        <span class="pill p-find">Gesucht</span> Verhalten bei grossem X (Stabilität)
+      </div>
+      <div class="card">
+        <div class="card-title">Kochrezept</div>
+        <ol class="steps">
+          <li>f(x, y) = A(x) · y  (Matrixmultiplikation!)</li>
+          <li>Euler / RK4 wie bei skalar, aber y ist ein Vektor</li>
+          <li>Fehler mit Vektornorm: ‖y_num − y_exakt‖ (Euklidisch)</li>
+          <li>Bei grossem X mit explizitem Euler → Instabilität möglich!</li>
+          <li>Implizites Euler stabil aber träger bei grossem h</li>
+        </ol>
+        <div class="warn-box">Explizit bis X=30 mit h=0.1: EW der Matrix prüfen → wenn EW sehr negativ, ist h zu gross!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 9. SPLINES -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#db61a2"></div>
+    <div class="section-title" style="color:#db61a2">9 · Kubische Spline-Interpolation</div>
+    <span class="tag" style="background:#3a1528;color:#db61a2">Spline</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Stützpunkte durch stückweise kubische Polynome verbinden, die an den Übergängen glatt sind (C²-stetig). Die <b>Momente</b> (2. Ableitung an den Knoten) sind die Unbekannten.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>kubische Splinefunktion</li>
+          <li>natürliche Randbedingungen</li>
+          <li>periodische Randbedingungen</li>
+          <li>Bedingungsgleichungen aufstellen</li>
+          <li>Spline in Abhängigkeit von Parameter t</li>
+          <li>Momente / zweite Ableitung</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> Stützpunkte (xⱼ, fⱼ)<br>
+        <span class="pill p-given">Gegeben</span> Art der Randbedingung<br>
+        <span class="pill p-given">Gegeben</span> Evtl. Parameter t in den Stützwerten<br><br>
+        <span class="pill p-find">Gesucht</span> Bedingungsgleichungen<br>
+        <span class="pill p-find">Gesucht</span> Splinefunktion (explizit)<br>
+        <span class="pill p-find">Gesucht</span> Änderungen bei periodischen RB
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept</div>
+      <div class="row2">
+        <div>
+          <ol class="steps">
+            <li><b>Schrittweiten hⱼ = xⱼ₊₁ − xⱼ</b> bestimmen (bei Äquidistanz: alle gleich)</li>
+            <li><b>Randbedingungen setzen:</b><br>
+              Natürlich: m₀ = 0, mₙ = 0<br>
+              Periodisch: m₀ = mₙ, S'(x₀) = S'(xₙ)</li>
+            <li><b>Innere Knoten — tridiagonales LGS:</b>
+              <span class="formula">hᵢ·mᵢ₋₁ + 2(hᵢ+hᵢ₊₁)·mᵢ + hᵢ₊₁·mᵢ₊₁
+= 6·[(fᵢ₊₁−fᵢ)/hᵢ₊₁ − (fᵢ−fᵢ₋₁)/hᵢ]</span>
+              Bei äquidistant (h=const) vereinfacht sich das!</li>
+            <li><b>LGS lösen</b> → Momente m₀…mₙ</li>
+            <li><b>Splinewert auswerten</b> auf [xⱼ, xⱼ₊₁]:<br>
+              <span class="formula">S_j(x) = 
+  (mⱼ₊₁(x−xⱼ)³ − mⱼ(x−xⱼ₊₁)³) / (6h)
++ (fⱼ₊₁/h − mⱼ₊₁·h/6)·(x−xⱼ)
++ (fⱼ/h   − mⱼ·h/6)·(xⱼ₊₁−x)</span></li>
+          </ol>
+        </div>
+        <div>
+          <div class="info-box">Bei nur 3 Punkten und natürlichen RB: m₀=0, m₂=0 → nur m₁ unbekannt → eine Gleichung!</div>
+          <div class="warn-box">Periodisch ≠ natürlich: letzte Zeile des LGS ändert sich (Zyklusbedingung statt m_N=0)</div>
+          <div class="note" style="margin-top:0.5rem">Die rechte Seite des LGS = Differenzen der Steigungen zwischen den Teilintervallen (zweite Differenz der fⱼ)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 10. LR-ZERLEGUNG / LGS -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#a371f7"></div>
+    <div class="section-title" style="color:#a371f7">10 · Lineare Gleichungssysteme — LR-Zerlegung</div>
+    <span class="tag" style="background:#2d1f55;color:#a371f7">LGS / LR</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">A·x = b direkt lösen durch Zerlegung in untere (L) und obere (R) Dreiecksmatrix. Dann zwei einfache Dreieckssysteme lösen statt das volle System zu invertieren.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>LR-Zerlegung / Gauss-Elimination</li>
+          <li>Vorwärts- / Rückwärtseinsetzen</li>
+          <li>Pivotisierung (Spaltenpivot)</li>
+          <li>LGS lösen</li>
+          <li>Tridiagonalmatrix</li>
+          <li>linsolve / fbsub</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> Matrix A (n×n), rechte Seite b<br><br>
+        <span class="pill p-find">Gesucht</span> Lösung x mit A·x = b<br>
+        <span class="pill p-find">Gesucht</span> L und R so dass A = L·R
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept</div>
+      <div class="row2">
+        <div>
+          <ol class="steps">
+            <li><b>LR-Zerlegung:</b> Gauss-Elimination auf A anwenden<br>→ L = untere Dreiecksmatrix (1 auf Diag.)<br>→ R = obere Dreiecksmatrix</li>
+            <li><b>Pivotisierung:</b> vor jedem Schritt Zeile mit grösstem |Eintrag| in Spalte nach oben tauschen → stabiler</li>
+            <li><b>Vorwärtseinsetzen:</b> L·y = b lösen (von oben nach unten)<br>
+              <span class="formula">yᵢ = (bᵢ − Σⱼ﹤ᵢ Lᵢⱼ·yⱼ) / Lᵢᵢ</span></li>
+            <li><b>Rückwärtseinsetzen:</b> R·x = y lösen (von unten nach oben)<br>
+              <span class="formula">xᵢ = (yᵢ − Σⱼ﹥ᵢ Rᵢⱼ·xⱼ) / Rᵢᵢ</span></li>
+          </ol>
+        </div>
+        <div>
+          <div class="info-box">Tridiagonalmatrix: nur 3 Diagonalen besetzt → kompaktere LR-Zerlegung möglich (LR_tri)</div>
+          <div class="info-box">Mehrere rechte Seiten b? Zerlegung A=LR einmal berechnen, dann fbsub für jedes b wiederholen — spart Zeit!</div>
+          <div class="warn-box">Ohne Pivotisierung: kann bei kleinen Diagonaleinträgen numerisch instabil werden</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 11. PARTIELLE DGL / WÄRMELEITUNG -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#58a6ff"></div>
+    <div class="section-title" style="color:#58a6ff">11 · Partielle DGL — Wärmeleitung (FTCS &amp; Crank-Nicolson)</div>
+    <span class="tag" style="background:#0d2040;color:#58a6ff">PDE / Wärme</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Die Wärmeleitungsgleichung ∂T/∂t = a·∂²T/∂x² beschreibt wie sich Temperatur in Zeit und Ort verändert. Diskretisierung in Ort (h) und Zeit (τ) → pro Zeitschritt ein LGS oder explizite Formel.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>Wärmeleitungsgleichung</li>
+          <li>FTCS / explizites Schema</li>
+          <li>Crank-Nicolson / implizites Schema</li>
+          <li>Stabilitätszahl s = τ·a/h²</li>
+          <li>Neumann-Randbedingung (Fluss)</li>
+          <li>Dirichlet-Randbedingung (Wert)</li>
+          <li>Temperaturleitfähigkeit a</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> Anfangstemperatur T(x, 0)<br>
+        <span class="pill p-given">Gegeben</span> Randbedingungen (links/rechts)<br>
+        <span class="pill p-given">Gegeben</span> a (Leitfähigkeit), h, τ<br><br>
+        <span class="pill p-find">Gesucht</span> T(x, t) zu späteren Zeiten<br>
+        <span class="pill p-find">Gesucht</span> Stabilitätsbedingung prüfen
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept — FTCS (explizit)</div>
+      <div class="row2">
+        <div>
+          <ol class="steps">
+            <li><b>Stabilitätszahl berechnen:</b><br>
+              <span class="formula">s = τ · a / h²   →  muss ≤ 0.5 sein!</span></li>
+            <li><b>Zeitschritt explizit:</b><br>
+              <span class="formula">T_neu[i] = s·T_alt[i+1] + (1−2s)·T_alt[i] + s·T_alt[i-1]</span></li>
+            <li>Randwerte separat behandeln (Dirichlet: fest; Neumann: Fluss einbauen)</li>
+          </ol>
+          <div class="warn-box">s &gt; 0.5 → instabil! Lösung explodiert. Kleineres τ oder grösseres h wählen.</div>
+        </div>
+        <div>
+          <div class="card-title" style="margin-bottom:0.4rem">Crank-Nicolson (implizit, immer stabil)</div>
+          <ol class="steps">
+            <li>Mittelung zwischen altem und neuem Zeitschritt → immer stabil (kein s-Limit)</li>
+            <li>Pro Zeitschritt: tridiagonales LGS lösen<br>
+              <span class="formula">α = a/(2h²),  β = 1/τ + a/h²
+rechte Seite: (1/τ − a/h²)·T_alt + α·(T_alt[i+1]+T_alt[i-1])</span></li>
+            <li>Lösen mit scipy.linalg.solve_banded oder np.linalg.solve</li>
+          </ol>
+          <div class="info-box">Ordnung 2 in Zeit und Ort — genauer als FTCS (Ordnung 1 in Zeit)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 12. ROBOTERKINEMATIK -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#db61a2"></div>
+    <div class="section-title" style="color:#db61a2">12 · Roboterkinematik (Vorwärts- &amp; Rückwärtskinematik)</div>
+    <span class="tag" style="background:#3a1528;color:#db61a2">Kinematik</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">2-Gelenk-Roboter: Vorwärtskinematik berechnet aus Winkeln (θ₁, θ₂) die kartesische Position. Rückwärtskinematik macht das Umgekehrte — nichtlineares Problem, gelöst mit Newton.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>Vorwärtskinematik / forwardKin</li>
+          <li>Rückwärtskinematik / backwardKin</li>
+          <li>Gelenkwinkel θ₁, θ₂</li>
+          <li>Greiferposition (x, y)</li>
+          <li>Jacobi-Matrix des Roboters</li>
+          <li>Newton-Iteration auf Gelenken</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Vorwärts: Gegeben</span> Winkel θ₁, θ₂<br>
+        <span class="pill p-find">Vorwärts: Gesucht</span> Position (x, y)<br><br>
+        <span class="pill p-given">Rückwärts: Gegeben</span> Zielposition (x, y)<br>
+        <span class="pill p-find">Rückwärts: Gesucht</span> Winkel θ₁, θ₂
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept</div>
+      <div class="row2">
+        <div>
+          <div class="card-title" style="font-size:12px;margin-bottom:0.3rem">Vorwärtskinematik (direkt berechenbar)</div>
+          <ol class="steps">
+            <li>Ellbogen: P = L₁·[cos θ₁, sin θ₁]</li>
+            <li>Greifer: T = P + L₂·[cos(θ₁+θ₂), sin(θ₁+θ₂)]</li>
+          </ol>
+          <span class="formula">x = L₁·cos(θ₁) + L₂·cos(θ₁+θ₂)
+y = L₁·sin(θ₁) + L₂·sin(θ₁+θ₂)</span>
+        </div>
+        <div>
+          <div class="card-title" style="font-size:12px;margin-bottom:0.3rem">Rückwärtskinematik (Newton nötig)</div>
+          <ol class="steps">
+            <li>Gleichungssystem aufstellen: g(θ) = forwardKin(θ) − Ziel = 0</li>
+            <li>Jacobi-Matrix J = ∂g/∂θ (analytisch oder numerisch)</li>
+            <li>Newton-Iteration: θ_neu = θ − J⁻¹·g(θ)</li>
+            <li>Startwert: aktueller Winkel oder Schätzwert</li>
+          </ol>
+          <div class="warn-box">Mehrere Lösungen möglich (Ellbogen oben/unten) → Startwert entscheidet!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 13. ADAPTIVE SCHRITTWEITE -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#39d353"></div>
+    <div class="section-title" style="color:#39d353">13 · Adaptive Schrittweitensteuerung (RK4)</div>
+    <span class="tag" style="background:#1a3015;color:#39d353">Adaptive ODE</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Statt fester Schrittweite h: h wird automatisch angepasst — gross wo die Lösung glatt ist, klein wo sie sich schnell ändert. Spart Rechenzeit bei gleicher Genauigkeit.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>adaptive Schrittweite</li>
+          <li>Fehlertoleranz tol</li>
+          <li>einfacher vs. doppelter Schritt</li>
+          <li>Schrittweitensteuerung</li>
+          <li>RK4_Schrittweitensteuerung</li>
+          <li>lokaler Fehler schätzen</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> DGL, Anfangswert, Toleranz tol<br><br>
+        <span class="pill p-find">Gesucht</span> Lösung mit automatisch variierendem h<br>
+        <span class="pill p-find">Gesucht</span> Anzahl Schritte / Effizienz
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept — Schrittweitensteuerung (Schritt-Verdopplungs-Methode)</div>
+      <ol class="steps">
+        <li><b>Einen Schritt der Grösse h:</b> y₁ = RK4(xₙ, yₙ, h)</li>
+        <li><b>Zwei Schritte der Grösse h/2:</b> y₂ = RK4(RK4(xₙ, yₙ, h/2), h/2)</li>
+        <li><b>Fehler schätzen:</b><br>
+          <span class="formula">err = ‖y₂ − y₁‖ / 15   (Richardson-Extrapolation für RK4)</span></li>
+        <li><b>Schritt akzeptieren wenn</b> err ≤ tol → xₙ₊₁ = xₙ + h, yₙ₊₁ = y₂</li>
+        <li><b>Neue Schrittweite:</b><br>
+          <span class="formula">h_neu = h · (tol / err)^(1/5) · Sicherheitsfaktor (≈ 0.9)</span></li>
+        <li>Falls err &gt; tol: Schritt verwerfen, h verkleinern, wiederholen</li>
+      </ol>
+      <div class="info-box">Im Praktikum: RK4_Schrittweitensteuerung_Systems(f, x0, y0, xn, tol) aufrufen</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 14. LEVENBERG-MARQUARDT -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#f78166"></div>
+    <div class="section-title" style="color:#f78166">14 · Nichtlineare Ausgleichsrechnung — Levenberg-Marquardt</div>
+    <span class="tag" style="background:#3a1a12;color:#f78166">LM</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Robustere Alternative zu Gauss-Newton. Kombiniert Gauss-Newton (schnell nahe der Lösung) mit Gradientenabstieg (stabil weit weg). Ein Dämpfungsparameter μ steuert das Verhalten.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>Levenberg-Marquardt / LM</li>
+          <li>Dämpfungsparameter μ</li>
+          <li>Gütekoeffizient ρ</li>
+          <li>β₀, β₁ (Schwellen für μ)</li>
+          <li>robuster als Gauss-Newton</li>
+          <li>schlechte Startwerte</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> Daten, Modellfunktion, Startwerte<br>
+        <span class="pill p-given">Gegeben</span> μ, β₀, β₁ (oder Defaults)<br><br>
+        <span class="pill p-find">Gesucht</span> Optimale Parameter<br>
+        <span class="pill p-find">Gesucht</span> Residuum ‖f(p)‖²
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept — Unterschied zu Gauss-Newton</div>
+      <div class="row2">
+        <div>
+          <ol class="steps">
+            <li><b>Gauss-Newton-Schritt:</b><br>
+              <span class="formula">JᵀJ · Δp = −Jᵀf</span></li>
+            <li><b>LM-Schritt (mit Dämpfung μ):</b><br>
+              <span class="formula">(JᵀJ + μ·I) · Δp = −Jᵀf</span></li>
+            <li>p_neu = p + Δp, Güte ρ berechnen</li>
+            <li>ρ &lt; β₀ → μ erhöhen (mehr Gradientenabstieg)</li>
+            <li>ρ &gt; β₁ → μ verringern (mehr Gauss-Newton)</li>
+          </ol>
+        </div>
+        <div>
+          <div class="info-box">μ → 0: verhält sich wie Gauss-Newton (schnell)<br>μ → ∞: verhält sich wie Gradientenabstieg (stabil)</div>
+          <div class="info-box">Wann LM statt Gauss-Newton? Wenn Gauss-Newton nicht konvergiert oder schlechte Startwerte vorliegen</div>
+          <div class="note">Im Praktikum: LM(f, J, p, beta0, beta1, mu, maxit)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- 15. NEWTON SKALAR -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#3fb950"></div>
+    <div class="section-title" style="color:#3fb950">15 · Nullstellensuche — Newton skalar</div>
+    <span class="tag" style="background:#1a3a24;color:#3fb950">Newton 1D</span>
+  </div>
+  <div class="body">
+    <div class="row">
+      <div class="card">
+        <div class="card-title">Worum geht es?</div>
+        <p style="font-size:13px;color:#8b949e">Nullstelle einer skalaren Funktion f(x) = 0 suchen. Newton-Verfahren konvergiert quadratisch (sehr schnell) wenn man nahe genug am Startwert ist.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Schlagwörter in der Aufgabe</div>
+        <ul class="kw">
+          <li>Nullstelle / Nullstellensuche</li>
+          <li>skalare Gleichung f(x) = 0</li>
+          <li>Newton-Verfahren</li>
+          <li>quadratische Konvergenz</li>
+          <li>Ableitung f'(x) benötigt</li>
+          <li>Startwert x₀</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">Gegeben / Gesucht</div>
+        <span class="pill p-given">Gegeben</span> f(x), f'(x), Startwert x₀<br>
+        <span class="pill p-given">Gegeben</span> Toleranz<br><br>
+        <span class="pill p-find">Gesucht</span> Nullstelle x* mit f(x*) = 0<br>
+        <span class="pill p-find">Gesucht</span> Anzahl Iterationen
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kochrezept</div>
+      <div class="row2">
+        <div>
+          <ol class="steps">
+            <li><b>Iteration:</b><br>
+              <span class="formula">x_{n+1} = xₙ − f(xₙ) / f'(xₙ)</span></li>
+            <li><b>Abbruch wenn</b> |x_{n+1} − xₙ| &lt; tol</li>
+            <li><b>Konvergenzordnung:</b> quadratisch (Fehler wird bei jedem Schritt quadriert)</li>
+          </ol>
+          <div class="warn-box">f'(xₙ) ≈ 0: Newton divergiert oder konvergiert sehr langsam</div>
+        </div>
+        <div>
+          <div class="info-box">Auch bei implizitem Euler intern verwendet: pro Schritt Newton auf<br>F(y) = y − yₙ − h·f(x_{n+1}, y) = 0</div>
+          <div class="info-box">Im Praktikum: newton(f, df, x0) aufrufen</div>
+          <div class="note">Rückwärtskinematik, implizites Euler, nichtlin. Ausgleich — überall steckt Newton drin!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SCHNELL-ÜBERSICHT -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-head">
+    <div class="dot" style="background:#888780"></div>
+    <div class="section-title" style="color:#d3d1c7">Schnell-Übersicht: Schlagwort → Thema → was brauche ich</div>
+    <span class="tag" style="background:#2C2C2A;color:#D3D1C7">Cheat</span>
+  </div>
+  <div class="body">
+    <div class="card">
+      <table style="width:100%;font-size:13px;border-collapse:collapse;">
+        <tr style="border-bottom:1px solid #30363d;">
+          <th style="text-align:left;padding:6px 10px;color:#8b949e;font-weight:700;">Schlagwort in Aufgabe</th>
+          <th style="text-align:left;padding:6px 10px;color:#8b949e;font-weight:700;">Thema</th>
+          <th style="text-align:left;padding:6px 10px;color:#8b949e;font-weight:700;">Brauche ich</th>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Kondition / relativer Fehler</td>
+          <td style="padding:6px 10px;color:#8b949e;">LGS-Kondition</td>
+          <td style="padding:6px 10px;color:#e6edf3;">‖A‖ · ‖A⁻¹‖, Fehlerformel</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Randwertproblem / RWP</td>
+          <td style="padding:6px 10px;color:#8b949e;">FDM</td>
+          <td style="padding:6px 10px;color:#e6edf3;">Differenzenquotienten, tridiag. LGS</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Schablone / zentrale Differenzen</td>
+          <td style="padding:6px 10px;color:#8b949e;">FDM</td>
+          <td style="padding:6px 10px;color:#e6edf3;">Koeffizienten vor yᵢ₋₁, yᵢ, yᵢ₊₁</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">lineare Ausgleichsrechnung / QR</td>
+          <td style="padding:6px 10px;color:#8b949e;">Least Squares</td>
+          <td style="padding:6px 10px;color:#e6edf3;">Designmatrix, QR, Rückwärtseinsetzen</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">logarithmieren / Kondensator</td>
+          <td style="padding:6px 10px;color:#8b949e;">Linearisierung</td>
+          <td style="padding:6px 10px;color:#e6edf3;">ln transformieren → lineares Problem</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Cholesky / Normalgleichung</td>
+          <td style="padding:6px 10px;color:#8b949e;">Ausgleichsrechnung (von Hand)</td>
+          <td style="padding:6px 10px;color:#e6edf3;">AᵀA, LDLᵀ, Vorwärts/Rückwärts</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">nichtlineares Gleichungssystem</td>
+          <td style="padding:6px 10px;color:#8b949e;">Newton-Verfahren</td>
+          <td style="padding:6px 10px;color:#e6edf3;">g(r), Jacobi J, r_{n+1} = rₙ − J⁻¹g</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Gauss-Newton / nichtlin. Ausgleich</td>
+          <td style="padding:6px 10px;color:#8b949e;">Nichtlin. Least Squares</td>
+          <td style="padding:6px 10px;color:#e6edf3;">f(p) Residuen, Jacobi, JᵀJΔp=−Jᵀf</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Anfangswertproblem / RK4</td>
+          <td style="padding:6px 10px;color:#8b949e;">ODE numerisch</td>
+          <td style="padding:6px 10px;color:#e6edf3;">k₁–k₄, Schrittweite h, Fehler vs. Ref.</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">DGL 2. Ordnung / y''</td>
+          <td style="padding:6px 10px;color:#8b949e;">ODE-System</td>
+          <td style="padding:6px 10px;color:#e6edf3;">u=[y,y'], Vektorform, dann RK4</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Butcher-Tableau</td>
+          <td style="padding:6px 10px;color:#8b949e;">RK-Verfahren lesen</td>
+          <td style="padding:6px 10px;color:#e6edf3;">c,A,b ablesen; explizit/implizit; Stufen</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Stabilität / Schrittweite h</td>
+          <td style="padding:6px 10px;color:#8b949e;">Stabilitätsanalyse</td>
+          <td style="padding:6px 10px;color:#e6edf3;">Jacobi → EW → |1+hλ|≤1</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Konvergenzordnung</td>
+          <td style="padding:6px 10px;color:#8b949e;">ODE-Verfahren</td>
+          <td style="padding:6px 10px;color:#e6edf3;">Fehler bei N und 2N vergleichen: p = log₂(e_N/e_{2N})</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">kubischer Spline / Momente</td>
+          <td style="padding:6px 10px;color:#8b949e;">Spline-Interpolation</td>
+          <td style="padding:6px 10px;color:#e6edf3;">RB setzen, tridiag. LGS für mᵢ</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">LR-Zerlegung / Gauss-Elimination</td>
+          <td style="padding:6px 10px;color:#8b949e;">LGS lösen</td>
+          <td style="padding:6px 10px;color:#e6edf3;">L·y=b (vorwärts), R·x=y (rückwärts)</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Wärmeleitung / FTCS</td>
+          <td style="padding:6px 10px;color:#8b949e;">Part. DGL explizit</td>
+          <td style="padding:6px 10px;color:#e6edf3;">s = τa/h² ≤ 0.5 prüfen, Zeitschritt direkt</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Crank-Nicolson</td>
+          <td style="padding:6px 10px;color:#8b949e;">Part. DGL implizit</td>
+          <td style="padding:6px 10px;color:#e6edf3;">tridiag. LGS pro Zeitschritt, immer stabil</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Vorwärts-/Rückwärtskinematik</td>
+          <td style="padding:6px 10px;color:#8b949e;">Roboterkinematik</td>
+          <td style="padding:6px 10px;color:#e6edf3;">Vorwärts: trigonometrisch; Rückwärts: Newton</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">adaptive Schrittweite / tol</td>
+          <td style="padding:6px 10px;color:#8b949e;">Adaptive ODE</td>
+          <td style="padding:6px 10px;color:#e6edf3;">h einfach vs. h/2 doppelt vergleichen, err schätzen</td>
+        </tr>
+        <tr style="border-bottom:1px solid #21262d;">
+          <td style="padding:6px 10px;color:#d29922;">Levenberg-Marquardt / μ / ρ</td>
+          <td style="padding:6px 10px;color:#8b949e;">Nichtlin. Ausgleich (robust)</td>
+          <td style="padding:6px 10px;color:#e6edf3;">(JᵀJ + μI)Δp = −Jᵀf, μ per ρ steuern</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 10px;color:#d29922;">Nullstelle / Newton skalar</td>
+          <td style="padding:6px 10px;color:#8b949e;">Nullstellensuche 1D</td>
+          <td style="padding:6px 10px;color:#e6edf3;">x_{n+1} = xₙ − f(xₙ)/f'(xₙ)</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
