@@ -47,14 +47,22 @@ ol.s li b { color: #e6edf3; }
 .tip  { font-size:12px; color:#56d364; background:#0a1a10; border-radius:5px; padding:4px 9px; margin-top:5px; border-left:3px solid #3fb950; }
 p.d { font-size:13px; color:#8b949e; line-height:1.6; }
 .ssub { font-size:12px; font-weight:700; color:#e6edf3; margin:6px 0 3px; }
+/* Tables */
+.cheattable { width:100%; font-size:12px; border-collapse:collapse; }
+.cheattable th { text-align:left; padding:6px 8px; color:#8b949e; border-bottom:2px solid #30363d; background:#0d1117; }
+.cheattable td { padding:5px 8px; border-bottom:1px solid #21262d; vertical-align:top; }
+.cheattable tr:last-child td { border-bottom:none; }
+.hl-word { color:#d29922; font-weight:bold; }
+.hl-math { color:#a371f7; font-family:'Courier New', monospace; font-weight:bold; }
 </style>
 </head>
 <body>
 
 <h1>Numerik — Vollständiges Theorie-Cheatsheet</h1>
-<div class="subtitle">ZHAW · Praktikum W2–W14 + Blatt15 A1–A13 · geprüft &amp; vollständig · Schlagwörter alphabetisch</div>
+<div class="subtitle">ZHAW · Praktikum W2–W14 + Blatt15 A1–A13 · geprüft &amp; erweitert für die Prüfung</div>
 
 <div class="toc">
+  <a href="#s0">Schnellübersicht</a>
   <a href="#s1">1 Kondition</a><a href="#s2">2 LGS / LR</a><a href="#s3">3 Cholesky</a>
   <a href="#s4">4 Lin. Ausgleich / QR</a><a href="#s5">5 Linearisierung</a>
   <a href="#s6">6 Gauss-Newton</a><a href="#s7">7 Levenberg-Marquardt</a>
@@ -64,11 +72,94 @@ p.d { font-size:13px; color:#8b949e; line-height:1.6; }
   <a href="#s14">14 Butcher-Tableau</a><a href="#s15">15 ODE-Systeme</a>
   <a href="#s16">16 Feder-Dämpfer</a><a href="#s17">17 Stabilität</a>
   <a href="#s18">18 Adaptive Schrittw.</a><a href="#s19">19 Part. DGL / Wärme</a>
-  <a href="#s20">20 Spline</a><a href="#s21">Schnellübersicht</a>
+  <a href="#s20">20 Spline</a>
+</div>
+
+<div class="sec" id="s0">
+  <div class="sh"><div class="dot" style="background:#888780"></div>
+    <div class="st" style="color:#d3d1c7">Schnellübersicht — Schlagwörter &amp; Formeln</div>
+    <span class="tag" style="background:#2C2C2A;color:#D3D1C7">Cheat-Tabellen</span></div>
+  <div class="bd">
+    
+    <div class="card">
+      <div class="ct">Tabelle 1: Schlagwörter &amp; Synonyme (A–Z)</div>
+      <table class="cheattable">
+        <tr>
+          <th style="width:40%">Schlagwort / Synonyme</th>
+          <th style="width:10%">Abschnitt</th>
+          <th style="width:50%">Was brauche ich / Bedeutung</th>
+        </tr>
+        <tr><td class="hl-word">Adaptive Schrittweite / Schrittweitensteuerung</td><td>Abs. 18</td><td style="color:#e6edf3;">Schrittverdopplung, Fehlerkontrolle über Richardson-Extrapolation.</td></tr>
+        <tr><td class="hl-word">Anfangswertproblem (AWP) / Cauchy-Problem</td><td>Abs. 11-13</td><td style="color:#e6edf3;">Lösen mit Einschrittverfahren (Euler, Heun, RK4).</td></tr>
+        <tr><td class="hl-word">Ausgleichsrechnung (linear) / Least Squares</td><td>Abs. 4</td><td style="color:#e6edf3;">Modell an Messdaten anpassen. Linear in Parametern → QR-Zerlegung.</td></tr>
+        <tr><td class="hl-word">Ausgleichsrechnung (nichtlinear)</td><td>Abs. 6, 7</td><td style="color:#e6edf3;">Fehlerquadratmethode für nichtlineare Parameter → Gauss-Newton / LM.</td></tr>
+        <tr><td class="hl-word">Butcher-Tableau / Konsistenzordnung</td><td>Abs. 14</td><td style="color:#e6edf3;">Schema für RK-Verfahren. Diagonale ≠ 0 → implizites Verfahren (DIRK).</td></tr>
+        <tr><td class="hl-word">Cholesky-Zerlegung / LDLᵀ</td><td>Abs. 3</td><td style="color:#e6edf3;">Für symmetrisch positiv definite (spd) Matrizen. Löst Normalengleichung.</td></tr>
+        <tr><td class="hl-word">Crank-Nicolson-Verfahren</td><td>Abs. 19</td><td style="color:#e6edf3;">Lösen von partiellen DGLs. Implizit, absolut stabil für alle Schrittweiten.</td></tr>
+        <tr><td class="hl-word">Dämpfungsparameter / Regularisierung</td><td>Abs. 7</td><td style="color:#e6edf3;">Erhöht Stabilität bei schlechten Startwerten (Levenberg-Marquardt, μ).</td></tr>
+        <tr><td class="hl-word">Designmatrix / Überbestimmtes LGS</td><td>Abs. 4</td><td style="color:#e6edf3;">Matrix A beim linearen Ausgleich: Spalten sind Basisfunktionen f_j(x_i).</td></tr>
+        <tr><td class="hl-word">Dirichlet / Neumann Randbedingungen</td><td>Abs. 19</td><td style="color:#e6edf3;">Dirichlet = fester Wert am Rand. Neumann = fester Fluss (Ableitung) am Rand.</td></tr>
+        <tr><td class="hl-word">Einschrittverfahren</td><td>Abs. 11-13</td><td style="color:#e6edf3;">Überbegriff für Euler, Mittelpunkt, Heun, RK4.</td></tr>
+        <tr><td class="hl-word">Energieerhaltung / Symplektisch</td><td>Abs. 12, 16</td><td style="color:#e6edf3;">Implizite Mittelpunktsregel hält die Energie bei Hamilton-Systemen konstant.</td></tr>
+        <tr><td class="hl-word">Euler-Verfahren / Polygonzugverfahren</td><td>Abs. 11</td><td style="color:#e6edf3;">Einfachstes Verfahren. Explizit: oft instabil. Implizit: absolut stabil.</td></tr>
+        <tr><td class="hl-word">FDM / Randwertaufgabe (RWA)</td><td>Abs. 10</td><td style="color:#e6edf3;">Finite-Differenzen-Methode. Ableitungen durch Differenzenquotienten ersetzen.</td></tr>
+        <tr><td class="hl-word">FTCS / Explizite Differenzenmethode</td><td>Abs. 19</td><td style="color:#e6edf3;">Wärmeleitungsgleichung lösen. Achtung: Stabilitätszahl s ≤ 0.5 zwingend!</td></tr>
+        <tr><td class="hl-word">Gauss-Elimination / LR-Zerlegung</td><td>Abs. 2</td><td style="color:#e6edf3;">LGS lösen. L = untere Dreiecksmatrix, R = obere. Pivotisierung wichtig.</td></tr>
+        <tr><td class="hl-word">Gauss-Newton / Gradientenverfahren</td><td>Abs. 6</td><td style="color:#e6edf3;">Iteratives Lösen nichtlinearer LGS. Benötigt gute Startwerte und Jacobi-Matrix.</td></tr>
+        <tr><td class="hl-word">Gekoppelte DGL / Zustandsvektor</td><td>Abs. 15</td><td style="color:#e6edf3;">ODE-Systeme. Umschreiben von DGLs höherer Ordnung in Vektorform (u, u').</td></tr>
+        <tr><td class="hl-word">Heun-Verfahren / Prädiktor-Korrektor</td><td>Abs. 12</td><td style="color:#e6edf3;">Zweistufiges RK-Verfahren (Ordnung 2). Berechnet zwei Steigungen (k1, k2).</td></tr>
+        <tr><td class="hl-word">Householder-Spiegelung / Orthogonalität</td><td>Abs. 4</td><td style="color:#e6edf3;">Wird intern für die QR-Zerlegung genutzt. Bessere Konditionierung.</td></tr>
+        <tr><td class="hl-word">Inverskinematik / Rückwärtskinematik</td><td>Abs. 9</td><td style="color:#e6edf3;">Gelenkwinkel aus Endeffektor-Position berechnen (via Newton-System).</td></tr>
+        <tr><td class="hl-word">Jacobi-Matrix / Funktionalmatrix</td><td>Abs. 6, 8</td><td style="color:#e6edf3;">Matrix der partiellen Ableitungen. Nötig für Newton-System und Gauss-Newton.</td></tr>
+        <tr><td class="hl-word">Kondition / Fehlerfortpflanzung</td><td>Abs. 1</td><td style="color:#e6edf3;">Sensitivität eines LGS. Grosse Kondition = schlechte Stabilität bei Störungen.</td></tr>
+        <tr><td class="hl-word">Konvergenzordnung (empirisch)</td><td>Abs. 11-13</td><td style="color:#e6edf3;">Fehlerreduktion bei Halbierung der Schrittweite. Euler ≈ 1, Heun ≈ 2, RK4 ≈ 4.</td></tr>
+        <tr><td class="hl-word">Levenberg-Marquardt-Verfahren</td><td>Abs. 7</td><td style="color:#e6edf3;">Erweiterung von Gauss-Newton. Robuster bei schlechten Startwerten (Trust-Region).</td></tr>
+        <tr><td class="hl-word">Linearisierung / Exponentialmodell</td><td>Abs. 5</td><td style="color:#e6edf3;">Umformen durch Logarithmieren (z.B. Kondensator), um LGS linear zu machen.</td></tr>
+        <tr><td class="hl-word">Mittelpunktsregel</td><td>Abs. 12</td><td style="color:#e6edf3;">Explizit oder Implizit (Newton nötig). Ordnung 2.</td></tr>
+        <tr><td class="hl-word">Newton-Verfahren / Tangentenverfahren</td><td>Abs. 8</td><td style="color:#e6edf3;">Nullstellensuche. Quadratische Konvergenz. Startwertabhängig!</td></tr>
+        <tr><td class="hl-word">Normen (1-Norm, ∞-Norm, Euklid)</td><td>Abs. 1</td><td style="color:#e6edf3;">Wichtig zur Berechnung der Konditionszahl. Zeilensumme (∞) vs. Spaltensumme (1).</td></tr>
+        <tr><td class="hl-word">QR-Zerlegung</td><td>Abs. 4</td><td style="color:#e6edf3;">Zerlegt Matrix A in orthogonale Matrix Q und obere Dreiecksmatrix R.</td></tr>
+        <tr><td class="hl-word">Residuenvektor</td><td>Abs. 6</td><td style="color:#e6edf3;">Abweichung zwischen Modell und Messung: f_i(p) = φ(x_i;p) − y_i.</td></tr>
+        <tr><td class="hl-word">Riccati-DGL</td><td>Abs. 13</td><td style="color:#e6edf3;">Nichtlineare DGL 1. Ordnung (oft quadratisch in y). Lösbar z.B. mit RK4.</td></tr>
+        <tr><td class="hl-word">Runge-Kutta 4 (RK4)</td><td>Abs. 13</td><td style="color:#e6edf3;">Klassisches vierstufiges Verfahren. Berechnet 4 Steigungen (k1 bis k4).</td></tr>
+        <tr><td class="hl-word">Spline-Interpolation (Kubisch)</td><td>Abs. 20</td><td style="color:#e6edf3;">Glatte Kurvenanpassung (C²-stetig). Natürliche (m=0) vs periodische Randbed.</td></tr>
+        <tr><td class="hl-word">Stabilität / A-stabil / h_krit</td><td>Abs. 17</td><td style="color:#e6edf3;">Abhängig von Eigenwerten der Jacobi-Matrix. Explizite Verf. haben kritisches h.</td></tr>
+        <tr><td class="hl-word">Tridiagonalmatrix / Sparse Matrix</td><td>Abs. 2, 10, 20</td><td style="color:#e6edf3;">Bandmatrix mit 3 Diagonalen. Tritt auf bei Splines, Crank-Nicolson und FDM.</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="ct">Tabelle 2: Formeln &amp; Mathematische Ausdrücke</div>
+      <table class="cheattable">
+        <tr>
+          <th style="width:40%">Formel / Ausdruck</th>
+          <th style="width:10%">Abschnitt</th>
+          <th style="width:50%">Bedeutung / Anwendung</th>
+        </tr>
+        <tr><td class="hl-math">‖A‖ · ‖A⁻¹‖</td><td>Abs. 1</td><td style="color:#e6edf3;">Konditionszahl. Gleichbleibende Norm für Matrix & Inverse verwenden!</td></tr>
+        <tr><td class="hl-math">‖Δx‖/‖x‖ ≤ cond(A) · ‖Δb‖/‖b‖</td><td>Abs. 1</td><td style="color:#e6edf3;">Fehlerfortpflanzung. Maximaler relativer Fehler der Lösung x.</td></tr>
+        <tr><td class="hl-math">A = L · R</td><td>Abs. 2</td><td style="color:#e6edf3;">LR-Zerlegung für Vorwärts- (L·y=b) und Rückwärtseinsetzen (R·x=y).</td></tr>
+        <tr><td class="hl-math">AᵀA · p = Aᵀb</td><td>Abs. 3, 4</td><td style="color:#e6edf3;">Normalengleichung. Wird bei Cholesky (LDLᵀ) oder linearem Ausgleich genutzt.</td></tr>
+        <tr><td class="hl-math">JᵀJ · Δp = −Jᵀf</td><td>Abs. 6</td><td style="color:#e6edf3;">Iterationsschritt des Gauss-Newton-Verfahrens.</td></tr>
+        <tr><td class="hl-math">(JᵀJ + μ·I) · Δp = −Jᵀf</td><td>Abs. 7</td><td style="color:#e6edf3;">Iterationsschritt des Levenberg-Marquardt-Verfahrens (mit Dämpfung μ).</td></tr>
+        <tr><td class="hl-math">x_{n+1} = xₙ − f(xₙ)/f'(xₙ)</td><td>Abs. 8</td><td style="color:#e6edf3;">Newton-Verfahren (skalar) zur Nullstellensuche.</td></tr>
+        <tr><td class="hl-math">r_{n+1} = rₙ − J⁻¹·g(rₙ)</td><td>Abs. 8</td><td style="color:#e6edf3;">Newton-Verfahren (System) für Vektoren r. Löst: J·δ = g(r).</td></tr>
+        <tr><td class="hl-math">y' ≈ (yᵢ₊₁ − yᵢ₋₁) / (2h)</td><td>Abs. 10</td><td style="color:#e6edf3;">FDM: Zentraler Differenzenquotient für 1. Ableitung.</td></tr>
+        <tr><td class="hl-math">y'' ≈ (yᵢ₋₁ − 2yᵢ + yᵢ₊₁) / h²</td><td>Abs. 10</td><td style="color:#e6edf3;">FDM: Differenzenquotient für 2. Ableitung. Bildet die Schablone.</td></tr>
+        <tr><td class="hl-math">y_{n+1} = yₙ + h·f(xₙ, yₙ)</td><td>Abs. 11</td><td style="color:#e6edf3;">Explizites Euler-Verfahren (Ordnung 1).</td></tr>
+        <tr><td class="hl-math">y_{n+1} = yₙ + h·f(x_{n+1}, y_{n+1})</td><td>Abs. 11</td><td style="color:#e6edf3;">Implizites Euler-Verfahren. Unbedingt stabil, benötigt Newton pro Schritt!</td></tr>
+        <tr><td class="hl-math">k₁ = f(xₙ, yₙ)<br>k₂ = f(xₙ+h, yₙ+h·k₁)</td><td>Abs. 12</td><td style="color:#e6edf3;">Heun-Verfahren (Prädiktor-Korrektor). Lösung: y_{n+1} = yₙ + h/2·(k₁+k₂)</td></tr>
+        <tr><td class="hl-math">y_{n+1} = yₙ + h/6·(k₁+2k₂+2k₃+k₄)</td><td>Abs. 13</td><td style="color:#e6edf3;">RK4: Klassisches Runge-Kutta Verfahren (Ordnung 4).</td></tr>
+        <tr><td class="hl-math">p = log₂(e_N / e_{2N})</td><td>Abs. 11-13</td><td style="color:#e6edf3;">Empirische Konvergenzordnung. e = Fehler bei Schrittzahl N bzw. 2N.</td></tr>
+        <tr><td class="hl-math">|1 + h·λ| ≤ 1</td><td>Abs. 17</td><td style="color:#e6edf3;">Stabilitätsbedingung. λ = Eigenwert der Jacobi-Matrix. Ergibt h_krit.</td></tr>
+        <tr><td class="hl-math">h_neu = h · (tol/err)^(1/5) · 0.9</td><td>Abs. 18</td><td style="color:#e6edf3;">Adaptive Schrittweitensteuerung für RK4. 0.9 = Sicherheitspuffer.</td></tr>
+        <tr><td class="hl-math">s = τ·a/h²  (Bedingung: s ≤ 0.5)</td><td>Abs. 19</td><td style="color:#e6edf3;">Stabilitätszahl für FTCS (Wärmeleitungsgleichung). τ=Zeit, h=Ortsschritt.</td></tr>
+      </table>
+    </div>
+  </div>
 </div>
 
 
-<!-- ══════════════ 1. KONDITION ══════════════ -->
 <div class="sec" id="s1">
   <div class="sh"><div class="dot" style="background:#388bfd"></div>
     <div class="st" style="color:#388bfd">1 · Kondition eines linearen Gleichungssystems</div>
@@ -134,7 +225,6 @@ p.d { font-size:13px; color:#8b949e; line-height:1.6; }
 </div>
 
 
-<!-- ══════════════ 2. LGS / LR ══════════════ -->
 <div class="sec" id="s2">
   <div class="sh"><div class="dot" style="background:#a371f7"></div>
     <div class="st" style="color:#a371f7">2 · Lineare Gleichungssysteme — LR-Zerlegung</div>
@@ -200,7 +290,6 @@ p.d { font-size:13px; color:#8b949e; line-height:1.6; }
 </div>
 
 
-<!-- ══════════════ 3. CHOLESKY ══════════════ -->
 <div class="sec" id="s3">
   <div class="sh"><div class="dot" style="background:#f78166"></div>
     <div class="st" style="color:#f78166">3 · Cholesky-Zerlegung &amp; Plattenkondensator</div>
@@ -260,7 +349,6 @@ lᵢⱼ = (aᵢⱼ − Σₖ﹤ⱼ lᵢₖ·lⱼₖ·dₖ) / dⱼ</span></li>
 </div>
 
 
-<!-- ══════════════ 4. LINEARE AUSGLEICHSRECHNUNG ══════════════ -->
 <div class="sec" id="s4">
   <div class="sh"><div class="dot" style="background:#d29922"></div>
     <div class="st" style="color:#d29922">4 · Lineare Ausgleichsrechnung — QR &amp; Householder</div>
@@ -327,7 +415,6 @@ lᵢⱼ = (aᵢⱼ − Σₖ﹤ⱼ lᵢₖ·lⱼₖ·dₖ) / dⱼ</span></li>
 </div>
 
 
-<!-- ══════════════ 5. LINEARISIERUNG ══════════════ -->
 <div class="sec" id="s5">
   <div class="sh"><div class="dot" style="background:#d29922"></div>
     <div class="st" style="color:#d29922">5 · Linearisierung durch Logarithmieren</div>
@@ -383,7 +470,6 @@ AᵀA·p = Aᵀb</span></li>
 </div>
 
 
-<!-- ══════════════ 6. GAUSS-NEWTON ══════════════ -->
 <div class="sec" id="s6">
   <div class="sh"><div class="dot" style="background:#f78166"></div>
     <div class="st" style="color:#f78166">6 · Nichtlineare Ausgleichsrechnung — Gauss-Newton</div>
@@ -438,7 +524,6 @@ AᵀA·p = Aᵀb</span></li>
 </div>
 
 
-<!-- ══════════════ 7. LEVENBERG-MARQUARDT ══════════════ -->
 <div class="sec" id="s7">
   <div class="sh"><div class="dot" style="background:#f78166"></div>
     <div class="st" style="color:#f78166">7 · Nichtlineare Ausgleichsrechnung — Levenberg-Marquardt</div>
@@ -486,7 +571,6 @@ AᵀA·p = Aᵀb</span></li>
 </div>
 
 
-<!-- ══════════════ 8. NEWTON / NULLSTELLEN ══════════════ -->
 <div class="sec" id="s8">
   <div class="sh"><div class="dot" style="background:#3fb950"></div>
     <div class="st" style="color:#3fb950">8 · Nullstellensuche — Newton (skalar &amp; System)</div>
@@ -546,7 +630,6 @@ Abbruch: ‖δ‖ &lt; tol</span>
 </div>
 
 
-<!-- ══════════════ 9. ROBOTERKINEMATIK ══════════════ -->
 <div class="sec" id="s9">
   <div class="sh"><div class="dot" style="background:#db61a2"></div>
     <div class="st" style="color:#db61a2">9 · Roboterkinematik (2-Gelenk-Roboter)</div>
@@ -604,7 +687,6 @@ y = L₁sin(θ₁) + L₂sin(θ₁+θ₂)</span>
 </div>
 
 
-<!-- ══════════════ 10. FDM / RWP ══════════════ -->
 <div class="sec" id="s10">
   <div class="sh"><div class="dot" style="background:#a371f7"></div>
     <div class="st" style="color:#a371f7">10 · Lineares Randwertproblem — Finite-Differenzen-Methode</div>
@@ -664,7 +746,6 @@ y'' ≈ (yᵢ₋₁ − 2yᵢ + yᵢ₊₁) / h²</span></li>
 </div>
 
 
-<!-- ══════════════ 11. EULER ══════════════ -->
 <div class="sec" id="s11">
   <div class="sh"><div class="dot" style="background:#388bfd"></div>
     <div class="st" style="color:#388bfd">11 · ODE — Euler-Verfahren (explizit &amp; implizit)</div>
@@ -720,7 +801,6 @@ y'' ≈ (yᵢ₋₁ − 2yᵢ + yᵢ₊₁) / h²</span></li>
 </div>
 
 
-<!-- ══════════════ 12. HEUN & MITTELPUNKT ══════════════ -->
 <div class="sec" id="s12">
   <div class="sh"><div class="dot" style="background:#388bfd"></div>
     <div class="st" style="color:#388bfd">12 · ODE — Heun &amp; Mittelpunktsregel (Ordnung 2)</div>
@@ -780,7 +860,6 @@ y_{n+1} = yₙ + h·k</span>
 </div>
 
 
-<!-- ══════════════ 13. RK4 ══════════════ -->
 <div class="sec" id="s13">
   <div class="sh"><div class="dot" style="background:#388bfd"></div>
     <div class="st" style="color:#388bfd">13 · ODE — Klassisches Runge-Kutta-Verfahren (RK4)</div>
@@ -844,7 +923,6 @@ y_{n+1} = yₙ + h/6·(k₁+2k₂+2k₃+k₄)</span></li>
 </div>
 
 
-<!-- ══════════════ 14. BUTCHER ══════════════ -->
 <div class="sec" id="s14">
   <div class="sh"><div class="dot" style="background:#388bfd"></div>
     <div class="st" style="color:#388bfd">14 · Butcher-Tableau — RK-Verfahren lesen &amp; anwenden</div>
@@ -899,7 +977,6 @@ y_{n+1} = yₙ + h/6·(k₁+2k₂+2k₃+k₄)</span></li>
 </div>
 
 
-<!-- ══════════════ 15. ODE-SYSTEME ══════════════ -->
 <div class="sec" id="s15">
   <div class="sh"><div class="dot" style="background:#58a6ff"></div>
     <div class="st" style="color:#58a6ff">15 · ODE-Systeme — Verfahren für Vektoren</div>
@@ -954,7 +1031,6 @@ y_{n+1} = yₙ + h/6·(k₁+2k₂+2k₃+k₄)</span></li>
 </div>
 
 
-<!-- ══════════════ 16. FEDER-DÄMPFER ══════════════ -->
 <div class="sec" id="s16">
   <div class="sh"><div class="dot" style="background:#58a6ff"></div>
     <div class="st" style="color:#58a6ff">16 · Anwendungsmodell — Feder-Dämpfer-System</div>
@@ -1002,7 +1078,6 @@ y_{n+1} = yₙ + h/6·(k₁+2k₂+2k₃+k₄)</span></li>
 </div>
 
 
-<!-- ══════════════ 17. STABILITÄT ══════════════ -->
 <div class="sec" id="s17">
   <div class="sh"><div class="dot" style="background:#39d353"></div>
     <div class="st" style="color:#39d353">17 · Stabilität von ODE-Verfahren</div>
@@ -1058,7 +1133,6 @@ y_{n+1} = yₙ + h/6·(k₁+2k₂+2k₃+k₄)</span></li>
 </div>
 
 
-<!-- ══════════════ 18. ADAPTIVE SCHRITTWEITE ══════════════ -->
 <div class="sec" id="s18">
   <div class="sh"><div class="dot" style="background:#39d353"></div>
     <div class="st" style="color:#39d353">18 · Adaptive Schrittweitensteuerung (RK4)</div>
@@ -1111,7 +1185,6 @@ y_{n+1} = yₙ + h/6·(k₁+2k₂+2k₃+k₄)</span></li>
 </div>
 
 
-<!-- ══════════════ 19. PARTIELLE DGL ══════════════ -->
 <div class="sec" id="s19">
   <div class="sh"><div class="dot" style="background:#58a6ff"></div>
     <div class="st" style="color:#58a6ff">19 · Partielle DGL — Wärmeleitung (FTCS &amp; Crank-Nicolson)</div>
@@ -1171,7 +1244,6 @@ y_{n+1} = yₙ + h/6·(k₁+2k₂+2k₃+k₄)</span></li>
 </div>
 
 
-<!-- ══════════════ 20. SPLINE ══════════════ -->
 <div class="sec" id="s20">
   <div class="sh"><div class="dot" style="background:#db61a2"></div>
     <div class="st" style="color:#db61a2">20 · Kubische Spline-Interpolation</div>
@@ -1225,62 +1297,6 @@ y_{n+1} = yₙ + h/6·(k₁+2k₂+2k₃+k₄)</span></li>
           <div class="info">Periodisch: letzte Zeile LGS wird Zyklusbedingung (m₀=mₙ statt mₙ=0).</div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ══════════════ SCHNELLÜBERSICHT ══════════════ -->
-<div class="sec" id="s21">
-  <div class="sh"><div class="dot" style="background:#888780"></div>
-    <div class="st" style="color:#d3d1c7">Schnellübersicht — Schlagwort → Abschnitt → was brauche ich</div>
-    <span class="tag" style="background:#2C2C2A;color:#D3D1C7">Cheat-Tabelle</span></div>
-  <div class="bd">
-    <div class="card">
-      <table style="width:100%;font-size:11.5px;border-collapse:collapse;">
-        <tr style="border-bottom:1px solid #30363d;">
-          <th style="text-align:left;padding:4px 7px;color:#8b949e;width:32%">Schlagwort / Begriff</th>
-          <th style="text-align:left;padding:4px 7px;color:#8b949e;width:8%">→</th>
-          <th style="text-align:left;padding:4px 7px;color:#8b949e;">Was brauche ich</th>
-        </tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Kondition / rel. Fehler / 1-Norm / ∞-Norm</td><td style="padding:3px 7px;color:#8b949e;">Abs. 1</td><td style="padding:3px 7px;color:#e6edf3;">‖A‖·‖A⁻¹‖, gleiche Norm, Fehlerformel umformen</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Sensitivität / Verstärkung / Störung</td><td style="padding:3px 7px;color:#8b949e;">Abs. 1</td><td style="padding:3px 7px;color:#e6edf3;">gross cond = schlecht kond. = kleine b-Fehler → grosse x-Fehler</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">LR-Zerlegung / Gauss / fbsub / Pivot</td><td style="padding:3px 7px;color:#8b949e;">Abs. 2</td><td style="padding:3px 7px;color:#e6edf3;">L·y=b vorwärts, R·x=y rückwärts</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Tridiagonalmatrix / LR_tri / sparse</td><td style="padding:3px 7px;color:#8b949e;">Abs. 2</td><td style="padding:3px 7px;color:#e6edf3;">LR_tri(A) kompakt — bei FDM-Systemen</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Cholesky / LDLᵀ / sym. pos. def.</td><td style="padding:3px 7px;color:#8b949e;">Abs. 3</td><td style="padding:3px 7px;color:#e6edf3;">AᵀA, dᵢ/lᵢⱼ berechnen, 3 Einsetzschritte</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Plattenkondensator / Laplace / Kapazität</td><td style="padding:3px 7px;color:#8b949e;">Abs. 3</td><td style="padding:3px 7px;color:#e6edf3;">mychol löst Laplace-Gitter, C=ε₀εᵣA/d</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">lin. Ausgleich / QR / Designmatrix / SSE</td><td style="padding:3px 7px;color:#8b949e;">Abs. 4</td><td style="padding:3px 7px;color:#e6edf3;">A[i,j]=fⱼ(xᵢ), QR(A), backsub(R,Qᵀb)</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Regression / Modell anpassen / Messdaten</td><td style="padding:3px 7px;color:#8b949e;">Abs. 4</td><td style="padding:3px 7px;color:#e6edf3;">Modell linear in Parametern? → QR</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Householder / Spiegelungsmatrix / scale(w)</td><td style="padding:3px 7px;color:#8b949e;">Abs. 4</td><td style="padding:3px 7px;color:#e6edf3;">intern in QR(A). scale(w) verbessert Kondition.</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">logarithmieren / Kondensator / e^(−t/RC)</td><td style="padding:3px 7px;color:#8b949e;">Abs. 5</td><td style="padding:3px 7px;color:#e6edf3;">ln(I)=α+βt → U₀=R·exp(α), C=−1/(Rβ)</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Gauss-Newton / nichtlin. Ausgleich / Jacobi</td><td style="padding:3px 7px;color:#8b949e;">Abs. 6</td><td style="padding:3px 7px;color:#e6edf3;">fᵢ=φ−yᵢ, J=∂f/∂p, JᵀJΔp=−Jᵀf</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Levenberg-Marquardt / μ / ρ / β₀ β₁</td><td style="padding:3px 7px;color:#8b949e;">Abs. 7</td><td style="padding:3px 7px;color:#e6edf3;">(JᵀJ+μI)Δp=−Jᵀf, ρ&lt;β₀→μ↑, ρ&gt;β₁→μ↓</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Newton skalar / Nullstelle / f(x)=0</td><td style="padding:3px 7px;color:#8b949e;">Abs. 8</td><td style="padding:3px 7px;color:#e6edf3;">x−f(x)/f'(x), Abbruch |δ|&lt;tol</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">nichtlin. Gleichungssystem / alle Lösungen</td><td style="padding:3px 7px;color:#8b949e;">Abs. 8</td><td style="padding:3px 7px;color:#e6edf3;">Jacobi J, r−J⁻¹g, verschiedene Startwerte!</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Vorwärts- / Rückwärtskinematik / θ₁ θ₂</td><td style="padding:3px 7px;color:#8b949e;">Abs. 9</td><td style="padding:3px 7px;color:#e6edf3;">Vorwärts: trig. Formel. Rückwärts: Newton.</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Randwertproblem / FDM / Schablone</td><td style="padding:3px 7px;color:#8b949e;">Abs. 10</td><td style="padding:3px 7px;color:#e6edf3;">y'≈Δ/2h, y''≈(yᵢ₋₁−2yᵢ+yᵢ₊₁)/h², tridiag.</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Grenzschicht / ε·y'' / freie Grenzschicht</td><td style="padding:3px 7px;color:#8b949e;">Abs. 10</td><td style="padding:3px 7px;color:#e6edf3;">gleiche FDM, ε multipliziert y''-Koeffizient</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">explizites Euler / Ordnung 1 / instabil</td><td style="padding:3px 7px;color:#8b949e;">Abs. 11</td><td style="padding:3px 7px;color:#e6edf3;">y+h·f(xₙ,yₙ). Instabil wenn h·|λ|&gt;2</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">implizites Euler / unbedingt stabil</td><td style="padding:3px 7px;color:#8b949e;">Abs. 11</td><td style="padding:3px 7px;color:#e6edf3;">Newton pro Schritt, stabil ∀h, Ord. 1</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Heun / Prädiktor-Korrektor / Mittelpunktsregel</td><td style="padding:3px 7px;color:#8b949e;">Abs. 12</td><td style="padding:3px 7px;color:#e6edf3;">k₁,k₂ — Ordnung 2</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">symplektisch / energieerhaltend / Feder</td><td style="padding:3px 7px;color:#8b949e;">Abs. 12/16</td><td style="padding:3px 7px;color:#e6edf3;">Implizite Mittelpunktsregel verwenden!</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">RK4 / vierstufig / k₁k₂k₃k₄ / Ordnung 4</td><td style="padding:3px 7px;color:#8b949e;">Abs. 13</td><td style="padding:3px 7px;color:#e6edf3;">h/6·(k₁+2k₂+2k₃+k₄), Fehler∝h⁴</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">DGL 2. Ordnung / y'' / zwei Anfangswerte</td><td style="padding:3px 7px;color:#8b949e;">Abs. 13</td><td style="padding:3px 7px;color:#e6edf3;">u=[y,y'], u'=[y', RHS] → System, dann RK4</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Riccati-DGL / xy'−3x²y²=5x</td><td style="padding:3px 7px;color:#8b949e;">Abs. 13</td><td style="padding:3px 7px;color:#e6edf3;">durch x teilen → y'=3xy²+5 → RK4</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Konvergenzordnung aus Fehlertabelle</td><td style="padding:3px 7px;color:#8b949e;">Abs. 11–13</td><td style="padding:3px 7px;color:#e6edf3;">p = log₂(e_N / e_{2N}). Euler≈1, RK2≈2, RK4≈4</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Butcher-Tableau / c,A,b / explizit-implizit</td><td style="padding:3px 7px;color:#8b949e;">Abs. 14</td><td style="padding:3px 7px;color:#e6edf3;">Diag≠0→impl.; Stufen zählen; kᵢ=f(…+h·Σaᵢⱼkⱼ)</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">ODE-System / y'=A(x)y / Zustandsvektor</td><td style="padding:3px 7px;color:#8b949e;">Abs. 15</td><td style="padding:3px 7px;color:#e6edf3;">f=A·y (Vektor!), Euler/RK4 identisch, ‖Fehler‖</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Feder / Energie / berechne_energie</td><td style="padding:3px 7px;color:#8b949e;">Abs. 16</td><td style="padding:3px 7px;color:#e6edf3;">E=½ks(x−mg/ks)²+½mv². Impl.Mittelpkt.→E const.</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Stabilität / Jacobi-EW / h_krit</td><td style="padding:3px 7px;color:#8b949e;">Abs. 17</td><td style="padding:3px 7px;color:#e6edf3;">J bei t=0 → EW λ → |1+hλ|≤1 → h&lt;2/|Re(λ)|</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">impl. Euler Iterationsvorschrift / Vektorform</td><td style="padding:3px 7px;color:#8b949e;">Abs. 17</td><td style="padding:3px 7px;color:#e6edf3;">x_{k+1}=xₖ+h·f(t_{k+1},x_{k+1}) → Newton</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">adaptive Schrittweite / tol / Schrittverdopplung</td><td style="padding:3px 7px;color:#8b949e;">Abs. 18</td><td style="padding:3px 7px;color:#e6edf3;">err=‖y₂−y₁‖/15, h_neu=h·(tol/err)^⅕·0.9</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">FTCS / s=τa/h² / Wärmeleitung</td><td style="padding:3px 7px;color:#8b949e;">Abs. 19</td><td style="padding:3px 7px;color:#e6edf3;">s≤0.5! T_neu=s(T[i+1]+T[i−1])+(1−2s)T[i]</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Neumann-RB / Fluss l(t) / Randbedingung</td><td style="padding:3px 7px;color:#8b949e;">Abs. 19</td><td style="padding:3px 7px;color:#e6edf3;">T_neu[0]=2s·(T[1]−T[0]−h·l(t))+T[0]</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Crank-Nicolson / α β γ / solve_banded</td><td style="padding:3px 7px;color:#8b949e;">Abs. 19</td><td style="padding:3px 7px;color:#e6edf3;">α=a/2h², β=1/τ+a/h², γ=1/τ−a/h², tridiag. LGS</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Spline natürlich / m₀=mₙ=0 / Momente</td><td style="padding:3px 7px;color:#8b949e;">Abs. 20</td><td style="padding:3px 7px;color:#e6edf3;">RB setzen, tridiag. LGS für mᵢ, Splineformel</td></tr>
-        <tr style="border-bottom:1px solid #21262d;"><td style="padding:3px 7px;color:#d29922;">Spline periodisch / momentePer / h global</td><td style="padding:3px 7px;color:#8b949e;">Abs. 20</td><td style="padding:3px 7px;color:#e6edf3;">h=x[1]−x[0] GLOBAL setzen! zyklisches LGS</td></tr>
-        <tr><td style="padding:3px 7px;color:#d29922;">splineval / der=0,1,2,3 / Ableitungen</td><td style="padding:3px 7px;color:#8b949e;">Abs. 20</td><td style="padding:3px 7px;color:#e6edf3;">der=0: Wert · der=1: S' · der=2: S'' · der=3: S'''</td></tr>
-      </table>
     </div>
   </div>
 </div>
